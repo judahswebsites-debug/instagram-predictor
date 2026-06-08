@@ -1,18 +1,27 @@
 """
-Instagram public profile scraper using RapidAPI Instagram Scraper Stable API.
+Instagram researcher — uses web search + oEmbed to gather public profile data.
+Works from any server with no extra API keys.
 """
 
 import re
-import os
 import logging
+import urllib.parse
 from dataclasses import dataclass, field
 from typing import Optional
 
 import requests
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
-RAPIDAPI_HOST = "instagram-scraper-stable-api.p.rapidapi.com"
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+}
 
 
 @dataclass
@@ -39,144 +48,118 @@ class ProfileData:
     is_verified: bool
     profile_pic_url: str
     posts: list = field(default_factory=list)
+    # Extra field for web research data
+    web_research: str = ""
     error: Optional[str] = None
 
 
-def _safe_int(val) -> int:
+def _oembed_profile(username: str) -> dict:
+    """Get basic profile info from Instagram's official oEmbed endpoint."""
     try:
-        return int(val or 0)
-    except (TypeError, ValueError):
-        return 0
+        url = f"https://www.instagram.com/api/v1/users/web_profile_info/?username={username}"
+        r = requests.get(url, headers=HEADERS, timeout=15)
+        if r.status_code == 200:
+            user = r.json().get("data", {}).get("user", {})
+            if user:
+                return user
+    except Exception:
+        pass
+
+    # Fallback: oEmbed
+    try:
+        url = f"https://api.instagram.com/oembed/?url=https://www.instagram.com/{username}/&format=json"
+        r = requests.get(url, timeout=10)
+        if r.status_code == 200:
+            data = r.json()
+            return {
+                "username": username,
+                "full_name": data.get("author_name", ""),
+                "profile_pic_url": data.get("thumbnail_url", ""),
+            }
+    except Exception:
+        pass
+
+    return {}
 
 
-def _headers():
-    return {
-        "x-rapidapi-key": os.getenv("RAPIDAPI_KEY", ""),
-        "x-rapidapi-host": RAPIDAPI_HOST,
-    }
+def _ddg_search(query: str, max_results: int = 8) -> list[str]:
+    """Search DuckDuckGo and return a list of result snippets."""
+    try:
+        encoded = urllib.parse.quote_plus(query)
+        url = f"https://html.duckduckgo.com/html/?q={encoded}"
+        r = requests.get(url, headers=HEADERS, timeout=15)
+        soup = BeautifulSoup(r.text, "html.parser")
+        snippets = []
+        for result in soup.select(".result__snippet"):
+            text = result.get_text(strip=True)
+            if text:
+                snippets.append(text)
+            if len(snippets) >= max_results:
+                break
+        return snippets
+    except Exception as e:
+        logger.warning(f"DDG search failed: {e}")
+        return []
 
 
-def _get_profile(username: str) -> Optional[dict]:
-    """Fetch user profile info."""
-    # Try v1 endpoint first
-    for url in [
-        f"https://{RAPIDAPI_HOST}/ig/info/",
-        f"https://{RAPIDAPI_HOST}/v1/info",
-    ]:
-        try:
-            r = requests.get(
-                url,
-                headers=_headers(),
-                params={"username_or_id_or_url": username},
-                timeout=20,
-            )
-            if r.status_code == 200:
-                data = r.json()
-                # Handle various response shapes
-                return (
-                    data.get("data")
-                    or data.get("user")
-                    or data.get("result")
-                    or (data if data.get("username") else None)
-                )
-        except Exception as e:
-            logger.warning(f"Profile fetch failed ({url}): {e}")
-    return None
+def _research_creator(username: str) -> str:
+    """
+    Build a research dossier on an Instagram creator using web search.
+    Returns a text block that gets sent to Claude alongside whatever
+    profile data we could collect.
+    """
+    sections = []
 
+    # 1. General profile search
+    general = _ddg_search(f"{username} instagram creator content")
+    if general:
+        sections.append("## Web results about @" + username)
+        sections.extend(f"- {s}" for s in general)
 
-def _get_posts(username: str, max_posts: int) -> list:
-    """Fetch recent posts."""
-    for url in [
-        f"https://{RAPIDAPI_HOST}/ig/posts/",
-        f"https://{RAPIDAPI_HOST}/v1/posts",
-    ]:
-        try:
-            r = requests.get(
-                url,
-                headers=_headers(),
-                params={"username_or_id_or_url": username},
-                timeout=20,
-            )
-            if r.status_code == 200:
-                data = r.json()
-                items = (
-                    data.get("data", {}).get("items")
-                    or data.get("items")
-                    or data.get("posts")
-                    or data.get("result", {}).get("items")
-                    or []
-                )
-                return items[:max_posts]
-        except Exception as e:
-            logger.warning(f"Posts fetch failed ({url}): {e}")
-    return []
+    # 2. Recent content / viral posts
+    recent = _ddg_search(f"{username} instagram recent posts viral 2024 2025")
+    if recent:
+        sections.append("\n## Recent content mentions")
+        sections.extend(f"- {s}" for s in recent)
 
+    # 3. Niche / trending topics
+    niche = _ddg_search(f"instagram {username} niche audience followers content type")
+    if niche:
+        sections.append("\n## Niche & audience research")
+        sections.extend(f"- {s}" for s in niche)
 
-def _parse_posts(items: list) -> list:
-    posts = []
-    for item in items:
-        # Caption
-        cap = item.get("caption") or {}
-        caption = cap.get("text", "") if isinstance(cap, dict) else str(cap)
-        hashtags = re.findall(r"#(\w+)", caption)
-
-        # Type
-        media_type = item.get("media_type") or item.get("type") or 1
-        is_video = media_type in (2, "2", "VIDEO", "video") or item.get("is_video", False)
-
-        posts.append(Post(
-            shortcode=item.get("code") or item.get("shortcode") or "",
-            caption=caption[:600],
-            hashtags=hashtags,
-            likes=_safe_int(item.get("like_count") or item.get("likes")),
-            comments=_safe_int(item.get("comment_count") or item.get("comments")),
-            is_video=is_video,
-            video_view_count=_safe_int(
-                item.get("view_count") or item.get("play_count") or item.get("video_view_count")
-            ),
-            timestamp=str(item.get("taken_at") or item.get("timestamp") or ""),
-            typename="GraphVideo" if is_video else "GraphImage",
-        ))
-    return posts
+    return "\n".join(sections)
 
 
 def scrape_profile(username: str, max_posts: int = 20) -> ProfileData:
     username = username.strip().lstrip("@")
 
-    if not os.getenv("RAPIDAPI_KEY"):
+    # Try to get basic profile data
+    user = _oembed_profile(username)
+
+    # Always do web research regardless
+    research = _research_creator(username)
+
+    if not user and not research:
         return ProfileData(
             username=username, full_name="", biography="",
             followers=0, following=0, post_count=0,
             is_verified=False, profile_pic_url="",
-            error="RAPIDAPI_KEY environment variable not set.",
+            error=f"Could not find any public information for '@{username}'. Check the username is correct.",
         )
-
-    user = _get_profile(username)
-    if not user:
-        return ProfileData(
-            username=username, full_name="", biography="",
-            followers=0, following=0, post_count=0,
-            is_verified=False, profile_pic_url="",
-            error=f"Could not find '@{username}'. Make sure the account is public and the username is correct.",
-        )
-
-    raw_posts = _get_posts(username, max_posts)
-    posts = _parse_posts(raw_posts)
 
     return ProfileData(
         username=user.get("username", username),
         full_name=user.get("full_name", ""),
-        biography=user.get("biography") or user.get("bio") or "",
-        followers=_safe_int(
-            user.get("follower_count") or user.get("followers") or
-            user.get("edge_followed_by", {}).get("count")
-        ),
-        following=_safe_int(
-            user.get("following_count") or user.get("following") or
-            user.get("edge_follow", {}).get("count")
-        ),
-        post_count=_safe_int(user.get("media_count") or user.get("post_count")),
+        biography=user.get("biography", ""),
+        followers=int(user.get("edge_followed_by", {}).get("count") or
+                      user.get("follower_count") or 0),
+        following=int(user.get("edge_follow", {}).get("count") or
+                      user.get("following_count") or 0),
+        post_count=int(user.get("edge_owner_to_timeline_media", {}).get("count") or
+                       user.get("media_count") or 0),
         is_verified=bool(user.get("is_verified")),
         profile_pic_url=user.get("profile_pic_url_hd") or user.get("profile_pic_url") or "",
-        posts=posts,
+        posts=[],  # No post-level data in this mode
+        web_research=research,
     )
