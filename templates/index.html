@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instagram Content Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      min-height: 100vh;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      text-align: center;
+      padding: 60px 24px 80px;
+    }
+    .hero .icon { font-size: 52px; margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(26px, 5vw, 42px); font-weight: 800; letter-spacing: -.5px; }
+    .hero p  {
+      font-size: clamp(15px, 2.5vw, 18px);
+      color: #a8b2d8;
+      max-width: 540px;
+      margin: 12px auto 0;
+      line-height: 1.6;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.12);
+      max-width: 520px;
+      margin: -44px auto 48px;
+      padding: 40px 36px;
+      position: relative;
+    }
+    @media (max-width: 560px) { .card { margin: -32px 16px 32px; padding: 28px 22px; } }
+
+    .card h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .card .sub { font-size: 14px; color: #6e6e73; margin-bottom: 28px; }
+
+    /* ── Fields ── */
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 7px;
+      color: #1d1d1f;
+    }
+    .field input {
+      width: 100%;
+      border: 2px solid #e5e5ea;
+      border-radius: 12px;
+      font-size: 16px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      color: #1d1d1f;
+      background: #fafafa;
+    }
+    .field input:focus {
+      border-color: #5e5ce6;
+      box-shadow: 0 0 0 3px rgba(94,92,230,.12);
+      background: #fff;
+    }
+    .field input::placeholder { color: #aeaeb2; }
+    .field .hint {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .field .hint a { color: #5e5ce6; text-decoration: none; }
+    .field .hint a:hover { text-decoration: underline; }
+
+    /* Posts selector */
+    .posts-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .posts-row label { font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .posts-row select {
+      flex: 1;
+      border: 2px solid #e5e5ea;
+      border-radius: 10px;
+      font-size: 15px;
+      padding: 10px 12px;
+      background: #fafafa;
+      color: #1d1d1f;
+      outline: none;
+      cursor: pointer;
+    }
+    .posts-row select:focus { border-color: #5e5ce6; }
+
+    /* ── Analyze button ── */
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #5e5ce6, #bf5af2);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 16px;
+      transition: opacity .2s, transform .1s;
+      letter-spacing: .01em;
+    }
+    .btn:hover  { opacity: .92; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Loading ── */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 40px 24px;
+      max-width: 520px;
+      margin: 0 auto 40px;
+    }
+    .loading-ring {
+      width: 56px; height: 56px;
+      border: 4px solid #e5e5ea;
+      border-top-color: #5e5ce6;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    #loading p  { font-size: 14px; color: #6e6e73; }
+
+    /* ── Error ── */
+    #errorBox {
+      display: none;
+      background: #fff2f2;
+      border: 1.5px solid #ffd2d2;
+      border-radius: 12px;
+      padding: 16px 20px;
+      max-width: 520px;
+      margin: 0 auto 24px;
+      font-size: 14px;
+      color: #c0392b;
+    }
+
+    /* ── Results ── */
+    #results { display: none; max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
+
+    /* Profile strip */
+    .profile-strip {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #5e5ce6;
+      flex-shrink: 0;
+      background: #f5f5f7;
+    }
+    .profile-text h3 { font-size: 17px; font-weight: 700; }
+    .profile-text .handle { font-size: 13px; color: #5e5ce6; margin-bottom: 3px; }
+    .profile-text .bio { font-size: 13px; color: #6e6e73; max-width: 340px; }
+    .stats { margin-left: auto; display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat .val { font-size: 18px; font-weight: 800; color: #1d1d1f; }
+    .stat .lbl { font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Niche + summary */
+    .summary-block {
+      background: linear-gradient(135deg, #f0f0ff, #f8f0ff);
+      border: 1.5px solid #d4d0ff;
+      border-radius: 16px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+    .niche-pill {
+      display: inline-block;
+      background: #5e5ce6;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .summary-block p { font-size: 15px; color: #3a3a4c; line-height: 1.65; }
+
+    /* Section header */
+    .section-title {
+      font-size: 19px;
+      font-weight: 800;
+      margin: 28px 0 4px;
+    }
+    .section-sub { font-size: 13px; color: #6e6e73; margin-bottom: 16px; }
+
+    /* Idea cards */
+    .idea-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 24px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.06);
+      border: 1.5px solid transparent;
+      transition: box-shadow .2s, transform .15s;
+    }
+    .idea-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
+    .idea-card.top    { border-color: #f0a500; background: linear-gradient(135deg, #fffbf0, #fff); }
+    .idea-card.second { border-color: #d4d0ff; }
+
+    .idea-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    .rank {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .rank.r1 { background: #fff3cd; color: #d48800; }
+    .rank.r2 { background: #ede9ff; color: #5e5ce6; }
+    .rank.r3 { background: #e0f7fa; color: #0097a7; }
+    .rank.r4 { background: #e8f5e9; color: #388e3c; }
+    .rank.r5 { background: #f5f5f7; color: #6e6e73; }
+
+    .idea-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+
+    .badges { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+    .badge {
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .badge.fmt    { background: #e0f7fa; color: #0097a7; }
+    .badge.high   { background: #e8f5e9; color: #2e7d32; }
+    .badge.medium { background: #fff8e1; color: #f57f17; }
+    .badge.low    { background: #f5f5f7; color: #6e6e73; }
+    .badge.boost  { background: #ede9ff; color: #5e5ce6; }
+
+    .idea-why { font-size: 14px; color: #4a4a5a; line-height: 1.6; margin-bottom: 12px; }
+
+    .keywords { display: flex; flex-wrap: wrap; gap: 6px; }
+    .kw {
+      background: #f5f5f7;
+      border: 1px solid #e5e5ea;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #6e6e73;
+      padding: 4px 10px;
+      font-family: "SF Mono", monospace;
+    }
+
+    /* Two-col grid for themes + hashtags */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+    @media (max-width: 580px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .mini-panel {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+    .mini-panel h4 { font-size: 13px; font-weight: 700; color: #6e6e73; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; }
+
+    .theme-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .theme-row .name { font-size: 13px; font-weight: 600; min-width: 80px; text-transform: capitalize; }
+    .bar-wrap { flex: 1; background: #f5f5f7; border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar { height: 7px; border-radius: 4px; background: linear-gradient(90deg, #5e5ce6, #bf5af2); }
+    .theme-row .eng { font-size: 11px; color: #8e8e93; min-width: 44px; text-align: right; }
+
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag {
+      background: #f0f0ff;
+      border: 1px solid #d4d0ff;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #5e5ce6;
+      padding: 4px 11px;
+    }
+
+    /* Insights */
+    .insight-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .insight {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.05);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .insight .icon { font-size: 22px; flex-shrink: 0; }
+    .insight .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8e8e93; margin-bottom: 3px; }
+    .insight .val { font-size: 14px; color: #1d1d1f; line-height: 1.5; }
+
+    /* ── New analysis button ── */
+    .restart-btn {
+      display: block;
+      margin: 32px auto 0;
+      background: #f5f5f7;
+      border: 1.5px solid #e5e5ea;
+      border-radius: 12px;
+      color: #1d1d1f;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px 28px;
+      transition: background .15s;
+    }
+    .restart-btn:hover { background: #ececec; }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="icon">📈</div>
+  <h1>Instagram Content Predictor</h1>
+  <p>Enter any public Instagram username and we'll tell you exactly what to post next to get more views.</p>
+</div>
+
+<!-- Input card -->
+<div class="card" id="inputCard">
+  <h2>Get your content prediction</h2>
+  <p class="sub">Takes about 30–60 seconds. No account login needed.</p>
+
+  <div class="field">
+    <label>Instagram Username</label>
+    <input id="username" type="text" placeholder="e.g. cristiano" autocomplete="off" />
+    <div class="hint">Any public profile — no @ needed</div>
+  </div>
+
+  <div class="field">
+    <label>Anthropic API Key</label>
+    <input id="apiKey" type="password" placeholder="sk-ant-api03-..." autocomplete="off" />
+    <div class="hint">
+      Free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key.
+      Your key is never saved or shared.
+    </div>
+  </div>
+
+  <div class="posts-row">
+    <label>Posts to scan:</label>
+    <select id="maxPosts">
+      <option value="10">10 posts — faster</option>
+      <option value="20" selected>20 posts — recommended</option>
+      <option value="30">30 posts — most accurate</option>
+    </select>
+  </div>
+
+  <button class="btn" id="analyzeBtn" onclick="analyze()">⚡ Analyze Profile</button>
+</div>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="loading-ring"></div>
+  <h3 id="loadingTitle">Scanning profile…</h3>
+  <p id="loadingMsg">This usually takes 30–60 seconds</p>
+</div>
+
+<!-- Error -->
+<div id="errorBox"></div>
+
+<!-- Results -->
+<div id="results">
+
+  <div class="profile-strip" id="profileStrip"></div>
+  <div class="summary-block" id="summaryBlock"></div>
+
+  <div class="section-title">🎯 What to post next</div>
+  <div class="section-sub">Ranked by predicted view boost — use these titles, keywords, and formats</div>
+  <div id="ideasList"></div>
+
+  <div class="section-title">📊 What's working now</div>
+  <div class="section-sub">Your best-performing themes and hashtags</div>
+  <div class="grid2" id="analyticsGrid"></div>
+
+  <div class="section-title">💡 Posting tips</div>
+  <div class="insight-list" id="insightsList"></div>
+
+  <button class="restart-btn" onclick="restart()">← Analyze another profile</button>
+</div>
+
+<script>
+  document.getElementById("username").addEventListener("keydown", e => { if (e.key === "Enter") analyze(); });
+
+  function fmt(n) {
+    if (!n && n !== 0) return "—";
+    if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+"M";
+    if (n >= 1_000)     return (n/1_000).toFixed(1)+"K";
+    return n.toLocaleString();
+  }
+
+  function show(id)  { document.getElementById(id).style.display = ""; }
+  function hide(id)  { document.getElementById(id).style.display = "none"; }
+  function block(id) { document.getElementById(id).style.display = "block"; }
+
+  const loadingSteps = [
+    ["Scraping recent posts…",      "Grabbing captions, hashtags, and engagement data"],
+    ["Analyzing engagement…",       "Finding what content gets the most views"],
+    ["Running AI prediction…",      "Claude is identifying your next winning content idea"],
+    ["Almost done…",                "Generating keyword and format recommendations"],
+  ];
+  let loadingTimer;
+
+  function startLoadingCycle() {
+    let i = 0;
+    const title = document.getElementById("loadingTitle");
+    const msg   = document.getElementById("loadingMsg");
+    function step() {
+      [title.textContent, msg.textContent] = loadingSteps[i % loadingSteps.length];
+      i++;
+      loadingTimer = setTimeout(step, 7000);
+    }
+    step();
+  }
+
+  async function analyze() {
+    const username = document.getElementById("username").value.trim().replace("@","");
+    const apiKey   = document.getElementById("apiKey").value.trim();
+    const maxPosts = document.getElementById("maxPosts").value;
+
+    if (!username) { alert("Please enter an Instagram username."); return; }
+    if (!apiKey)   { alert("Please enter your Anthropic API key."); return; }
+
+    document.getElementById("analyzeBtn").disabled = true;
+    hide("inputCard");
+    hide("results");
+    hide("errorBox");
+    block("loading");
+    startLoadingCycle();
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, api_key: apiKey, max_posts: maxPosts }),
+      });
+      const data = await res.json();
+
+      clearTimeout(loadingTimer);
+      hide("loading");
+
+      if (!res.ok || data.error) {
+        const box = document.getElementById("errorBox");
+        box.innerHTML = `<strong>Something went wrong:</strong><br>${data.error || "Unknown error. Please try again."}`;
+        block("errorBox");
+        block("inputCard");
+        document.getElementById("analyzeBtn").disabled = false;
+        return;
+      }
+
+      renderResults(data);
+      block("results");
+      document.getElementById("results").scrollIntoView({ behavior: "smooth" });
+
+    } catch (err) {
+      clearTimeout(loadingTimer);
+      hide("loading");
+      const box = document.getElementById("errorBox");
+      box.innerHTML = `<strong>Connection error:</strong> ${err.message}`;
+      block("errorBox");
+      block("inputCard");
+      document.getElementById("analyzeBtn").disabled = false;
+    }
+  }
+
+  function restart() {
+    hide("results");
+    hide("errorBox");
+    block("inputCard");
+    document.getElementById("analyzeBtn").disabled = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderResults(d) {
+    const p = d.profile;
+
+    /* Profile strip */
+    document.getElementById("profileStrip").innerHTML = `
+      ${p.profile_pic_url
+        ? `<img class="avatar" src="${p.profile_pic_url}" onerror="this.style.display='none'" />`
+        : `<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid #5e5ce6">👤</div>`}
+      <div class="profile-text">
+        <div class="handle">@${d.username}${p.is_verified ? " ✅" : ""}</div>
+        <h3>${p.full_name || d.username}</h3>
+        ${p.biography ? `<div class="bio">${p.biography.substring(0,120)}…</div>` : ""}
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="val">${fmt(p.followers)}</div><div class="lbl">Followers</div></div>
+        <div class="stat"><div class="val">${fmt(p.post_count)}</div><div class="lbl">Posts</div></div>
+        <div class="stat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Scanned</div></div>
+      </div>
+    `;
+
+    /* Summary */
+    document.getElementById("summaryBlock").innerHTML = `
+      <div class="niche-pill">${d.niche}</div>
+      <p>${d.summary}</p>
+    `;
+
+    /* Content ideas */
+    const rankClasses = ["r1","r2","r3","r4","r5"];
+    const cardClasses = ["top","second","","",""];
+    document.getElementById("ideasList").innerHTML = (d.content_ideas || []).map((idea, i) => {
+      const conf = (idea.confidence || "").toLowerCase();
+      const kws  = (idea.keywords || []).map(k => `<span class="kw">#${k}</span>`).join("");
+      return `
+        <div class="idea-card ${cardClasses[i] || ""}">
+          <div class="idea-top">
+            <div class="rank ${rankClasses[i] || "r5"}">#${i+1}</div>
+            <div class="idea-title">${idea.title}</div>
+          </div>
+          <div class="badges">
+            <span class="badge fmt">📹 ${idea.format}</span>
+            <span class="badge ${conf}">${conf === "high" ? "✅ High confidence" : conf === "medium" ? "⚡ Medium confidence" : "💭 Low confidence"}</span>
+            <span class="badge boost">📊 ${idea.estimated_boost}</span>
+          </div>
+          <p class="idea-why">${idea.why}</p>
+          ${kws ? `<div class="keywords">${kws}</div>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    /* Themes + hashtags */
+    const maxEng = Math.max(...(d.top_themes || []).map(t => t.avg_engagement), 1);
+    const themes = (d.top_themes || []).slice(0,7).map(t => `
+      <div class="theme-row">
+        <span class="name">${t.theme}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${Math.round(t.avg_engagement/maxEng*100)}%"></div></div>
+        <span class="eng">${fmt(t.avg_engagement)}</span>
+      </div>
+    `).join("") || "<p style='color:#8e8e93;font-size:13px'>Not enough caption data.</p>";
+
+    const tags = (d.top_hashtags || []).slice(0,16).map(t =>
+      `<span class="tag">#${t.tag}</span>`
+    ).join("") || "<p style='color:#8e8e93;font-size:13px'>No hashtags found.</p>";
+
+    document.getElementById("analyticsGrid").innerHTML = `
+      <div class="mini-panel">
+        <h4>Top themes by engagement</h4>
+        ${themes}
+      </div>
+      <div class="mini-panel">
+        <h4>Best performing hashtags</h4>
+        <div class="tag-wrap">${tags}</div>
+      </div>
+    `;
+
+    /* Insights */
+    const ins = d.posting_insights || {};
+    const insHtml = [
+      ins.best_format        ? { icon:"🎬", lbl:"Best Format",       val:`${ins.best_format} — ${ins.best_format_reason || ""}` } : null,
+      ins.posting_frequency_tip ? { icon:"📅", lbl:"Posting Cadence", val: ins.posting_frequency_tip } : null,
+      ins.audience_insight   ? { icon:"👥", lbl:"Your Audience",      val: ins.audience_insight } : null,
+    ].filter(Boolean).map(i => `
+      <div class="insight">
+        <div class="icon">${i.icon}</div>
+        <div><div class="lbl">${i.lbl}</div><div class="val">${i.val}</div></div>
+      </div>
+    `).join("") || "<p style='color:#8e8e93;font-size:13px;padding:8px 0'>Not enough data for insights.</p>";
+
+    document.getElementById("insightsList").innerHTML = insHtml;
+  }
+</script>
+</body>
+</html>
