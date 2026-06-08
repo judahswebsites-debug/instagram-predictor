@@ -40,50 +40,54 @@ def health():
 
 @app.route("/api/analyze", methods=["POST"])
 def analyze():
-    data = request.get_json(force=True)
-    username = (data.get("username") or "").strip().lstrip("@")
-    api_key = (data.get("api_key") or os.getenv("ANTHROPIC_API_KEY") or "").strip()
-    max_posts = min(int(data.get("max_posts", 20)), 30)
+    try:
+        data = request.get_json(force=True) or {}
+        username = (data.get("username") or "").strip().lstrip("@")
+        api_key = (data.get("api_key") or os.getenv("ANTHROPIC_API_KEY") or "").strip()
+        max_posts = min(int(data.get("max_posts", 20)), 30)
 
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
-    if not api_key or api_key == "your_anthropic_api_key_here":
-        return jsonify({"error": "Anthropic API key is required. Get one at console.anthropic.com"}), 400
+        if not username:
+            return jsonify({"error": "Username is required"}), 400
+        if not api_key or api_key == "your_anthropic_api_key_here":
+            return jsonify({"error": "Anthropic API key is required. Get one at console.anthropic.com"}), 400
 
-    logger.info(f"Analyzing @{username} (max_posts={max_posts})")
+        logger.info(f"Analyzing @{username} (max_posts={max_posts})")
 
-    # Step 1: Scrape
-    profile = scrape_profile(username, max_posts=max_posts)
-    if profile.error and not profile.posts:
-        return jsonify({"error": profile.error}), 422
+        # Step 1: Research
+        profile = scrape_profile(username, max_posts=max_posts)
+        if profile.error and not profile.web_research:
+            return jsonify({"error": profile.error}), 422
 
-    # Step 2: Analyze
-    result = analyze_profile(profile, api_key)
-    if result.error and not result.content_ideas:
-        return jsonify({"error": result.error}), 422
+        # Step 2: Analyze
+        result = analyze_profile(profile, api_key)
+        if result.error and not result.content_ideas:
+            return jsonify({"error": result.error}), 422
 
-    # Serialize
-    response = {
-        "username": result.username,
-        "niche": result.niche,
-        "summary": result.summary,
-        "profile": {
-            "full_name": profile.full_name,
-            "biography": profile.biography,
-            "followers": profile.followers,
-            "following": profile.following,
-            "post_count": profile.post_count,
-            "is_verified": profile.is_verified,
-            "profile_pic_url": profile.profile_pic_url,
-            "posts_analyzed": len(profile.posts),
-            "warning": profile.error,  # non-fatal warning
-        },
-        "top_themes": result.top_themes,
-        "top_hashtags": result.top_hashtags,
-        "posting_insights": result.posting_insights,
-        "content_ideas": [asdict(idea) for idea in result.content_ideas],
-    }
-    return jsonify(response)
+        response = {
+            "username": result.username,
+            "niche": result.niche,
+            "summary": result.summary,
+            "profile": {
+                "full_name": profile.full_name,
+                "biography": profile.biography,
+                "followers": profile.followers,
+                "following": profile.following,
+                "post_count": profile.post_count,
+                "is_verified": profile.is_verified,
+                "profile_pic_url": profile.profile_pic_url,
+                "posts_analyzed": len(profile.posts),
+                "warning": profile.error,
+            },
+            "top_themes": result.top_themes,
+            "top_hashtags": result.top_hashtags,
+            "posting_insights": result.posting_insights,
+            "content_ideas": [asdict(idea) for idea in result.content_ideas],
+        }
+        return jsonify(response)
+
+    except Exception as e:
+        logger.exception("Unhandled error in /api/analyze")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
