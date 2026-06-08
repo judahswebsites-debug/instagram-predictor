@@ -46,7 +46,7 @@ def _extract_hashtags(text: str) -> list:
     return re.findall(r"#(\w+)", text)
 
 
-def scrape_profile(username: str, max_posts: int = 20) -> ProfileData:
+def scrape_profile(username: str, password: str = "", max_posts: int = 20) -> ProfileData:
     username = username.strip().lstrip("@")
 
     apify_token = os.getenv("APIFY_TOKEN", "").strip()
@@ -62,9 +62,13 @@ def scrape_profile(username: str, max_posts: int = 20) -> ProfileData:
     try:
         client = ApifyClient(apify_token)
 
-        logger.info(f"Fetching @{username} via Apify...")
+        run_input = {"usernames": [username], "resultsLimit": max_posts}
+        if username and password:
+            run_input["loginInfo"] = {"username": username, "password": password}
+
+        logger.info(f"Fetching @{username} via Apify (auth={'yes' if password else 'no'})...")
         run = client.actor("apify/instagram-profile-scraper").call(
-            run_input={"usernames": [username], "resultsLimit": max_posts},
+            run_input=run_input,
         )
 
         # apify-client may return a dict or a Run object depending on version

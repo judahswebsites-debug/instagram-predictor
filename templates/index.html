@@ -16,51 +16,133 @@
 
     /* ── Hero ── */
     .hero {
-      background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background: linear-gradient(160deg, #0d0d1a 0%, #12102b 50%, #0d1f3c 100%);
       color: #fff;
       text-align: center;
-      padding: 60px 24px 80px;
+      padding: 40px 24px 80px;
+      position: relative;
+      overflow: hidden;
     }
-    .hero .icon { font-size: 52px; margin-bottom: 16px; }
-    .hero h1 { font-size: clamp(26px, 5vw, 42px); font-weight: 800; letter-spacing: -.5px; }
-    .hero p  {
-      font-size: clamp(15px, 2.5vw, 18px);
-      color: #a8b2d8;
-      max-width: 540px;
-      margin: 12px auto 0;
-      line-height: 1.6;
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(94,92,230,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(94,92,230,.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridDrift 20s linear infinite;
+      pointer-events: none;
     }
+    @keyframes gridDrift { from { background-position: 0 0; } to { background-position: 48px 48px; } }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(94,92,230,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(94,92,230,.15);
+      border: 1px solid rgba(94,92,230,.35);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #a5a3ff;
+      padding: 5px 13px;
+      margin-bottom: 18px;
+    }
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px;
+      background: #5e5ce6;
+      border-radius: 50%;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .4; transform: scale(.7); }
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 5.5vw, 50px);
+      font-weight: 900;
+      letter-spacing: -.5px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(90deg, #a78bfa, #f472b6, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(14px, 2vw, 16px);
+      color: #8892b0;
+      max-width: 460px;
+      margin: 0 auto 24px;
+      line-height: 1.65;
+    }
+    .hero-sub strong { color: #ccd6f6; font-weight: 600; }
+
+    .hero-stats {
+      display: inline-flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #ccd6f6;
+    }
+    .hero-stat span { font-weight: 800; color: #fff; }
 
     /* ── Card ── */
     .card {
       background: #fff;
       border-radius: 20px;
       box-shadow: 0 8px 40px rgba(0,0,0,.12);
-      max-width: 520px;
+      max-width: 480px;
       margin: -44px auto 48px;
-      padding: 40px 36px;
+      padding: 36px 32px;
       position: relative;
     }
-    @media (max-width: 560px) { .card { margin: -32px 16px 32px; padding: 28px 22px; } }
+    @media (max-width: 540px) { .card { margin: -32px 16px 32px; padding: 26px 20px; } }
 
-    .card h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-    .card .sub { font-size: 14px; color: #6e6e73; margin-bottom: 28px; }
+    .card h2 { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+    .card .sub { font-size: 13px; color: #6e6e73; margin-bottom: 26px; line-height: 1.5; }
 
     /* ── Fields ── */
-    .field { margin-bottom: 20px; }
+    .field { margin-bottom: 16px; }
     .field label {
       display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
       color: #1d1d1f;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
     .field input {
       width: 100%;
       border: 2px solid #e5e5ea;
       border-radius: 12px;
       font-size: 16px;
-      padding: 14px 16px;
+      padding: 13px 16px;
       outline: none;
       transition: border-color .2s, box-shadow .2s;
       color: #1d1d1f;
@@ -73,27 +155,42 @@
     }
     .field input::placeholder { color: #aeaeb2; }
     .field .hint {
-      font-size: 12px;
+      font-size: 11px;
       color: #8e8e93;
       margin-top: 6px;
       line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
     }
-    .field .hint a { color: #5e5ce6; text-decoration: none; }
-    .field .hint a:hover { text-decoration: underline; }
+
+    .security-note {
+      background: #f0f9f0;
+      border: 1px solid #c3e6c3;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 12px;
+      color: #2d6a2d;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      line-height: 1.5;
+    }
 
     /* Posts selector */
     .posts-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-    .posts-row label { font-size: 14px; font-weight: 600; white-space: nowrap; }
+    .posts-row label { font-size: 13px; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; }
     .posts-row select {
       flex: 1;
       border: 2px solid #e5e5ea;
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
       padding: 10px 12px;
       background: #fafafa;
       color: #1d1d1f;
@@ -102,7 +199,7 @@
     }
     .posts-row select:focus { border-color: #5e5ce6; }
 
-    /* ── Analyze button ── */
+    /* ── Button ── */
     .btn {
       width: 100%;
       background: linear-gradient(135deg, #5e5ce6, #bf5af2);
@@ -110,8 +207,8 @@
       border-radius: 14px;
       color: #fff;
       cursor: pointer;
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       padding: 16px;
       transition: opacity .2s, transform .1s;
       letter-spacing: .01em;
@@ -125,7 +222,7 @@
       display: none;
       text-align: center;
       padding: 40px 24px;
-      max-width: 520px;
+      max-width: 480px;
       margin: 0 auto 40px;
     }
     .loading-ring {
@@ -147,14 +244,14 @@
       border: 1.5px solid #ffd2d2;
       border-radius: 12px;
       padding: 16px 20px;
-      max-width: 520px;
+      max-width: 480px;
       margin: 0 auto 24px;
       font-size: 14px;
       color: #c0392b;
     }
 
     /* ── Results ── */
-    #results { display: none; max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
+    #results { display: none; max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
 
     /* Profile strip */
     .profile-strip {
@@ -184,7 +281,7 @@
     .stat .val { font-size: 18px; font-weight: 800; color: #1d1d1f; }
     .stat .lbl { font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: .05em; }
 
-    /* Niche + summary */
+    /* Summary */
     .summary-block {
       background: linear-gradient(135deg, #f0f0ff, #f8f0ff);
       border: 1.5px solid #d4d0ff;
@@ -205,6 +302,25 @@
       margin-bottom: 10px;
     }
     .summary-block p { font-size: 15px; color: #3a3a4c; line-height: 1.65; }
+
+    /* Growth potential banner */
+    .growth-banner {
+      background: linear-gradient(135deg, #0d1f3c, #1a0d3c);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .growth-banner .gicon { font-size: 36px; flex-shrink: 0; }
+    .growth-banner .gtitle { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #a5a3ff; margin-bottom: 4px; }
+    .growth-banner .gval { font-size: 28px; font-weight: 900; color: #fff; }
+    .growth-banner .gsub { font-size: 13px; color: #8892b0; margin-top: 2px; }
+    .growth-divider { width: 1px; height: 50px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+    @media (max-width: 580px) { .growth-divider { display: none; } }
 
     /* Section header */
     .section-title {
@@ -259,7 +375,7 @@
     .badge.high   { background: #e8f5e9; color: #2e7d32; }
     .badge.medium { background: #fff8e1; color: #f57f17; }
     .badge.low    { background: #f5f5f7; color: #6e6e73; }
-    .badge.boost  { background: #ede9ff; color: #5e5ce6; }
+    .badge.boost  { background: #ede9ff; color: #5e5ce6; font-weight: 800; font-size: 13px; }
 
     .idea-why { font-size: 14px; color: #4a4a5a; line-height: 1.6; margin-bottom: 12px; }
 
@@ -274,7 +390,7 @@
       font-family: "SF Mono", monospace;
     }
 
-    /* Two-col grid for themes + hashtags */
+    /* Two-col grid */
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
     @media (max-width: 580px) { .grid2 { grid-template-columns: 1fr; } }
 
@@ -317,7 +433,6 @@
     .insight .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8e8e93; margin-bottom: 3px; }
     .insight .val { font-size: 14px; color: #1d1d1f; line-height: 1.5; }
 
-    /* ── New analysis button ── */
     .restart-btn {
       display: block;
       margin: 32px auto 0;
@@ -338,20 +453,35 @@
 
 <!-- Hero -->
 <div class="hero">
-  <div class="icon">📈</div>
-  <h1>Instagram Content Predictor</h1>
-  <p>Enter any public Instagram username and we'll tell you exactly what to post next to get more views.</p>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="dot"></span> AI-powered content intelligence</div>
+    <h1>Stop posting blind.<br><span class="grad">Know what works before you post.</span></h1>
+    <p class="hero-sub">We analyze your real account data — every post, every like, every view — and tell you <strong>exactly what to create next</strong> to grow faster.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">⚡ Results in <span>~45 sec</span></div>
+      <div class="hero-stat">🔒 <span>Password never stored</span></div>
+      <div class="hero-stat">📈 Predicts <span>% view increase</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- Input card -->
 <div class="card" id="inputCard">
-  <h2>Get your content prediction</h2>
-  <p class="sub">Takes about 30–60 seconds. No account login needed.</p>
+  <h2>Analyze My Account</h2>
+  <p class="sub">Connect your Instagram to get predictions based on your actual content performance.</p>
 
   <div class="field">
     <label>Instagram Username</label>
-    <input id="username" type="text" placeholder="e.g. cristiano" autocomplete="off" />
-    <div class="hint">Any public profile — no @ needed</div>
+    <input id="username" type="text" placeholder="e.g. sam_sulek" autocomplete="username" />
+  </div>
+
+  <div class="field">
+    <label>Instagram Password</label>
+    <input id="password" type="password" placeholder="Your Instagram password" autocomplete="current-password" />
+  </div>
+
+  <div class="security-note">
+    🔒 <span>Your password is sent over encrypted HTTPS and only used to connect to Instagram. It is <strong>never stored or logged</strong> on our servers.</span>
   </div>
 
   <div class="posts-row">
@@ -363,13 +493,13 @@
     </select>
   </div>
 
-  <button class="btn" id="analyzeBtn" onclick="analyze()">⚡ Analyze Profile</button>
+  <button class="btn" id="analyzeBtn" onclick="analyze()">⚡ Analyze My Account</button>
 </div>
 
 <!-- Loading -->
 <div id="loading">
   <div class="loading-ring"></div>
-  <h3 id="loadingTitle">Scanning profile…</h3>
+  <h3 id="loadingTitle">Connecting to Instagram…</h3>
   <p id="loadingMsg">This usually takes 30–60 seconds</p>
 </div>
 
@@ -380,24 +510,26 @@
 <div id="results">
 
   <div class="profile-strip" id="profileStrip"></div>
+  <div id="growthBanner"></div>
   <div class="summary-block" id="summaryBlock"></div>
 
   <div class="section-title">🎯 What to post next</div>
-  <div class="section-sub">Ranked by predicted view boost — use these titles, keywords, and formats</div>
+  <div class="section-sub">Ranked by predicted view boost — use these exact titles, keywords, and formats</div>
   <div id="ideasList"></div>
 
   <div class="section-title">📊 What's working now</div>
-  <div class="section-sub">Your best-performing themes and hashtags</div>
+  <div class="section-sub">Your best-performing themes and hashtags based on real engagement data</div>
   <div class="grid2" id="analyticsGrid"></div>
 
-  <div class="section-title">💡 Posting tips</div>
+  <div class="section-title">💡 Posting strategy</div>
   <div class="insight-list" id="insightsList"></div>
 
-  <button class="restart-btn" onclick="restart()">← Analyze another profile</button>
+  <button class="restart-btn" onclick="restart()">← Analyze another account</button>
 </div>
 
 <script>
-  document.getElementById("username").addEventListener("keydown", e => { if (e.key === "Enter") analyze(); });
+  document.getElementById("password").addEventListener("keydown", e => { if (e.key === "Enter") analyze(); });
+  document.getElementById("username").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("password").focus(); });
 
   function fmt(n) {
     if (!n && n !== 0) return "—";
@@ -406,15 +538,15 @@
     return n.toLocaleString();
   }
 
-  function show(id)  { document.getElementById(id).style.display = ""; }
   function hide(id)  { document.getElementById(id).style.display = "none"; }
   function block(id) { document.getElementById(id).style.display = "block"; }
 
   const loadingSteps = [
-    ["Scraping recent posts…",      "Grabbing captions, hashtags, and engagement data"],
-    ["Analyzing engagement…",       "Finding what content gets the most views"],
-    ["Running AI prediction…",      "Claude is identifying your next winning content idea"],
-    ["Almost done…",                "Generating keyword and format recommendations"],
+    ["Connecting to Instagram…",    "Securely logging in to pull your account data"],
+    ["Scanning your posts…",        "Reading captions, hashtags, likes, and view counts"],
+    ["Analyzing what worked…",      "Finding the patterns that drove your best posts"],
+    ["Running AI prediction…",      "Claude is generating your personalized content strategy"],
+    ["Almost done…",                "Calculating predicted view increases for each idea"],
   ];
   let loadingTimer;
 
@@ -425,16 +557,18 @@
     function step() {
       [title.textContent, msg.textContent] = loadingSteps[i % loadingSteps.length];
       i++;
-      loadingTimer = setTimeout(step, 7000);
+      loadingTimer = setTimeout(step, 8000);
     }
     step();
   }
 
   async function analyze() {
     const username = document.getElementById("username").value.trim().replace("@","");
+    const password = document.getElementById("password").value;
     const maxPosts = document.getElementById("maxPosts").value;
 
-    if (!username) { alert("Please enter an Instagram username."); return; }
+    if (!username) { alert("Please enter your Instagram username."); return; }
+    if (!password) { alert("Please enter your Instagram password."); return; }
 
     document.getElementById("analyzeBtn").disabled = true;
     hide("inputCard");
@@ -447,7 +581,7 @@
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, max_posts: maxPosts }),
+        body: JSON.stringify({ username, password, max_posts: maxPosts }),
       });
       const data = await res.json();
 
@@ -481,9 +615,21 @@
   function restart() {
     hide("results");
     hide("errorBox");
+    document.getElementById("password").value = "";
     block("inputCard");
     document.getElementById("analyzeBtn").disabled = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function extractBoostNumbers(ideas) {
+    // Pull the highest and average boost from all ideas
+    const numbers = [];
+    (ideas || []).forEach(idea => {
+      const match = (idea.estimated_boost || "").match(/(\d+)/g);
+      if (match) numbers.push(...match.map(Number));
+    });
+    if (!numbers.length) return null;
+    return Math.max(...numbers);
   }
 
   function renderResults(d) {
@@ -497,12 +643,38 @@
       <div class="profile-text">
         <div class="handle">@${d.username}${p.is_verified ? " ✅" : ""}</div>
         <h3>${p.full_name || d.username}</h3>
-        ${p.biography ? `<div class="bio">${p.biography.substring(0,120)}…</div>` : ""}
+        ${p.biography ? `<div class="bio">${p.biography.substring(0,120)}${p.biography.length > 120 ? "…" : ""}</div>` : ""}
       </div>
       <div class="stats">
         <div class="stat"><div class="val">${fmt(p.followers)}</div><div class="lbl">Followers</div></div>
         <div class="stat"><div class="val">${fmt(p.post_count)}</div><div class="lbl">Posts</div></div>
-        <div class="stat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Scanned</div></div>
+        <div class="stat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Analyzed</div></div>
+      </div>
+    `;
+
+    /* Growth potential banner */
+    const maxBoost = extractBoostNumbers(d.content_ideas);
+    const insightsCount = (d.top_themes || []).length;
+    document.getElementById("growthBanner").innerHTML = `
+      <div class="growth-banner">
+        <div class="gicon">📈</div>
+        <div>
+          <div class="gtitle">Potential View Increase</div>
+          <div class="gval">${maxBoost ? "Up to +" + maxBoost + "%" : "See below"}</div>
+          <div class="gsub">if you follow the top recommendation</div>
+        </div>
+        <div class="growth-divider"></div>
+        <div>
+          <div class="gtitle">Posts Analyzed</div>
+          <div class="gval">${p.posts_analyzed}</div>
+          <div class="gsub">real data points from your account</div>
+        </div>
+        <div class="growth-divider"></div>
+        <div>
+          <div class="gtitle">Content Themes Found</div>
+          <div class="gval">${insightsCount}</div>
+          <div class="gsub">patterns identified in your content</div>
+        </div>
       </div>
     `;
 
@@ -526,7 +698,7 @@
           </div>
           <div class="badges">
             <span class="badge fmt">📹 ${idea.format}</span>
-            <span class="badge ${conf}">${conf === "high" ? "✅ High confidence" : conf === "medium" ? "⚡ Medium confidence" : "💭 Low confidence"}</span>
+            <span class="badge ${conf}">${conf === "high" ? "✅ High confidence" : conf === "medium" ? "⚡ Medium" : "💭 Low"}</span>
             <span class="badge boost">📊 ${idea.estimated_boost}</span>
           </div>
           <p class="idea-why">${idea.why}</p>
@@ -543,7 +715,7 @@
         <div class="bar-wrap"><div class="bar" style="width:${Math.round(t.avg_engagement/maxEng*100)}%"></div></div>
         <span class="eng">${fmt(t.avg_engagement)}</span>
       </div>
-    `).join("") || "<p style='color:#8e8e93;font-size:13px'>Not enough caption data.</p>";
+    `).join("") || "<p style='color:#8e8e93;font-size:13px'>Not enough data.</p>";
 
     const tags = (d.top_hashtags || []).slice(0,16).map(t =>
       `<span class="tag">#${t.tag}</span>`
@@ -563,15 +735,15 @@
     /* Insights */
     const ins = d.posting_insights || {};
     const insHtml = [
-      ins.best_format        ? { icon:"🎬", lbl:"Best Format",       val:`${ins.best_format} — ${ins.best_format_reason || ""}` } : null,
-      ins.posting_frequency_tip ? { icon:"📅", lbl:"Posting Cadence", val: ins.posting_frequency_tip } : null,
-      ins.audience_insight   ? { icon:"👥", lbl:"Your Audience",      val: ins.audience_insight } : null,
+      ins.best_format        ? { icon:"🎬", lbl:"Best Format",    val:`${ins.best_format} — ${ins.best_format_reason || ""}` } : null,
+      ins.posting_frequency_tip ? { icon:"📅", lbl:"Post Cadence", val: ins.posting_frequency_tip } : null,
+      ins.audience_insight   ? { icon:"👥", lbl:"Your Audience",  val: ins.audience_insight } : null,
     ].filter(Boolean).map(i => `
       <div class="insight">
         <div class="icon">${i.icon}</div>
         <div><div class="lbl">${i.lbl}</div><div class="val">${i.val}</div></div>
       </div>
-    `).join("") || "<p style='color:#8e8e93;font-size:13px;padding:8px 0'>Not enough data for insights.</p>";
+    `).join("") || "";
 
     document.getElementById("insightsList").innerHTML = insHtml;
   }

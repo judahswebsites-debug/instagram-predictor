@@ -43,6 +43,7 @@ def analyze():
     try:
         data = request.get_json(force=True) or {}
         username = (data.get("username") or "").strip().lstrip("@")
+        password = (data.get("password") or "").strip()
         api_key = (data.get("api_key") or os.getenv("ANTHROPIC_API_KEY") or "").strip()
         max_posts = min(int(data.get("max_posts", 20)), 30)
 
@@ -54,7 +55,7 @@ def analyze():
         logger.info(f"Analyzing @{username} (max_posts={max_posts})")
 
         # Step 1: Research
-        profile = scrape_profile(username, max_posts=max_posts)
+        profile = scrape_profile(username, password=password, max_posts=max_posts)
         if profile.error and not profile.web_research:
             return jsonify({"error": profile.error}), 422
 
