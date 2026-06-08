@@ -1,6 +1,6 @@
 """
 AI analysis engine.
-Uses Claude's knowledge of Instagram creators to generate content predictions.
+Uses real scraped Instagram data + Claude to generate content predictions.
 """
 
 import json
@@ -38,30 +38,54 @@ class AnalysisResult:
     error: Optional[str] = None
 
 
-def _build_prompt(username: str) -> str:
+def _build_prompt(profile: ProfileData) -> str:
+    username = profile.username
+    has_real_data = profile.followers > 0 or len(profile.posts) > 0
+
+    if has_real_data:
+        post_lines = []
+        for i, p in enumerate(profile.posts[:20]):
+            cap = (p.caption or "")[:200].replace("\n", " ")
+            views = f", {p.video_view_count:,} views" if p.is_video and p.video_view_count else ""
+            post_lines.append(
+                f"  {i+1}. [{p.typename}] likes={p.likes:,} comments={p.comments:,}{views} | {cap}"
+            )
+        posts_text = "\n".join(post_lines) if post_lines else "  (no posts retrieved)"
+
+        context = f"""REAL INSTAGRAM DATA for @{username}:
+- Full name: {profile.full_name or "unknown"}
+- Bio: {profile.biography or "none"}
+- Followers: {profile.followers:,}
+- Following: {profile.following:,}
+- Total posts: {profile.post_count:,}
+- Verified: {profile.is_verified}
+- Recent posts analyzed ({len(profile.posts)} posts):
+{posts_text}"""
+    else:
+        context = f"""No live Instagram data was retrieved for @{username}.
+Use your training knowledge about this creator to fill in the analysis."""
+
     return f"""You are an expert Instagram content strategist — like an Amazon keyword researcher, but optimizing for VIEWS instead of purchases.
 
-Analyze the Instagram creator @{username}.
+{context}
 
-Use everything you know about this creator: their niche, content style, what topics they cover, their audience, their most viral posts, engagement patterns, and what content performs best for them.
+Your job: analyze this creator's content and predict exactly what they should post next to MAXIMIZE views.
 
-If you're not familiar with this specific creator, use your knowledge of their apparent niche (based on the username) and Instagram content trends in that space to give strong, specific recommendations.
-
-Your job: predict exactly what they should post next to MAXIMIZE views.
+Look at which posts got the most likes/views, what topics recur, what hashtags they use, and what their audience responds to. Then give 5 specific, data-backed content ideas.
 
 Return your full analysis as valid JSON with this exact structure:
 {{
   "niche": "2-4 word description of creator's niche",
   "full_name": "creator's real name if known, else empty string",
   "biography": "brief description of who this creator is and what they post",
-  "followers": estimated follower count as integer (0 if unknown),
-  "is_verified": true or false,
+  "followers": {profile.followers if profile.followers else 0},
+  "is_verified": {str(profile.is_verified).lower()},
   "summary": "2-3 sentence summary of what's working for this creator and their biggest content opportunity",
   "top_themes": [
-    {{"theme": "content theme name", "avg_engagement": estimated_number, "post_count": estimated_posts}}
+    {{"theme": "content theme name", "avg_engagement": number, "post_count": number}}
   ],
   "top_hashtags": [
-    {{"tag": "hashtag without #", "frequency": estimated_uses, "avg_engagement": estimated_number}}
+    {{"tag": "hashtag without #", "frequency": number, "avg_engagement": number}}
   ],
   "posting_insights": {{
     "best_format": "Reels|Carousels|Images|Mixed",
@@ -72,7 +96,7 @@ Return your full analysis as valid JSON with this exact structure:
   "content_ideas": [
     {{
       "title": "Specific, compelling video/post title they should make",
-      "why": "Data-backed or trend-backed reason this will get more views",
+      "why": "Data-backed reason this will get more views",
       "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
       "format": "Reel|Carousel|Video|Image",
       "confidence": "High|Medium|Low",
@@ -83,9 +107,8 @@ Return your full analysis as valid JSON with this exact structure:
 
 Requirements:
 - Provide exactly 5 content_ideas ranked by predicted performance (best first)
-- Keywords = specific caption/hashtag words that maximize discoverability for this content
-- Be specific — name real topics, hooks, formats that fit this creator
-- If you don't know the creator well, still give 5 strong ideas based on their niche
+- If real post data was provided above, base themes/hashtags/engagement on it
+- Keywords = specific caption/hashtag words that maximize discoverability
 - Return ONLY the JSON object, no other text"""
 
 
@@ -96,7 +119,7 @@ def analyze_profile(profile: ProfileData, api_key: str) -> AnalysisResult:
         message = client.messages.create(
             model="claude-opus-4-6",
             max_tokens=4096,
-            messages=[{"role": "user", "content": _build_prompt(profile.username)}],
+            messages=[{"role": "user", "content": _build_prompt(profile)}],
         )
         raw = message.content[0].text.strip()
     except Exception as e:
@@ -122,11 +145,15 @@ def analyze_profile(profile: ProfileData, api_key: str) -> AnalysisResult:
             error=f"Failed to parse AI response: {e}",
         )
 
-    # Enrich the profile with what Claude knows
-    profile.full_name = data.get("full_name", "")
-    profile.biography = data.get("biography", "")
-    profile.followers = data.get("followers", 0)
-    profile.is_verified = data.get("is_verified", False)
+    # Fill profile fields from Claude if scraper didn't get them
+    if not profile.full_name:
+        profile.full_name = data.get("full_name", "")
+    if not profile.biography:
+        profile.biography = data.get("biography", "")
+    if not profile.followers:
+        profile.followers = data.get("followers", 0)
+    if not profile.is_verified:
+        profile.is_verified = data.get("is_verified", False)
 
     ideas = [
         ContentIdea(
