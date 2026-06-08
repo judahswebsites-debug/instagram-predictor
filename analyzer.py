@@ -64,7 +64,7 @@ def _summarize_posts(profile: ProfileData) -> tuple[str, dict]:
             view_count += 1
 
         insights_str = ""
-        if profile.has_insights:
+        if getattr(profile, "has_insights", False):
             parts = []
             if p.reach:       parts.append(f"reach={p.reach:,}")
             if p.impressions: parts.append(f"impr={p.impressions:,}")
@@ -118,7 +118,7 @@ Return this exact JSON and nothing else:
 }}"""
 
     posts_text, stats = _summarize_posts(profile)
-    data_label = "FULL CREATOR INSIGHTS" if profile.has_insights else "PUBLIC DATA"
+    data_label = "FULL CREATOR INSIGHTS" if getattr(profile, "has_insights", False) else "PUBLIC DATA"
 
     # Build hashtag list from actual captions
     all_hashtags: dict[str, int] = {}
