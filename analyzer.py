@@ -95,8 +95,9 @@ Return your full analysis as valid JSON with this exact structure:
   }},
   "content_ideas": [
     {{
-      "title": "Specific, compelling video/post title they should make",
-      "why": "Data-backed reason this will get more views",
+      "title": "Short, punchy post title (under 10 words)",
+      "why": "One simple sentence explaining why this will get more views. No jargon. 7th grade level. Do NOT reference specific past posts.",
+      "action": "One sentence on exactly what to film or create. Very simple and direct.",
       "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
       "format": "Reel|Carousel|Video|Image",
       "confidence": "High|Medium|Low",
@@ -107,8 +108,10 @@ Return your full analysis as valid JSON with this exact structure:
 
 Requirements:
 - Provide exactly 5 content_ideas ranked by predicted performance (best first)
-- If real post data was provided above, base themes/hashtags/engagement on it
-- Keywords = specific caption/hashtag words that maximize discoverability
+- Keep ALL text short and simple — 7th grade reading level
+- "why" must be ONE sentence, no more than 15 words, no mention of past posts
+- "action" tells them exactly what to do in plain English
+- Keywords = hashtags that will help this content get discovered
 - Return ONLY the JSON object, no other text"""
 
 
