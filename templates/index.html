@@ -3,498 +3,806 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instagram Content Predictor</title>
+  <title>InstaPredict — Know What to Post Next</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
-      background: #f5f5f7;
-      color: #1d1d1f;
-      min-height: 100vh;
+    :root {
+      --indigo: #6366f1;
+      --indigo-dark: #4f46e5;
+      --indigo-light: #eef2ff;
+      --green: #10b981;
+      --text: #111827;
+      --text-2: #374151;
+      --text-muted: #6b7280;
+      --text-faint: #9ca3af;
+      --surface: #ffffff;
+      --bg: #f9fafb;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --sh-xs: 0 1px 2px rgba(0,0,0,.05);
+      --sh-sm: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+      --sh: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+      --sh-md: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -2px rgba(0,0,0,.04);
+      --sh-lg: 0 20px 25px -5px rgba(0,0,0,.09), 0 10px 10px -5px rgba(0,0,0,.03);
+      --r: 20px;
+      --r-sm: 12px;
     }
 
-    /* ── Hero ── */
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HERO ── */
+    #landing { }
+
     .hero {
-      background: linear-gradient(160deg, #0d0d1a 0%, #12102b 50%, #0d1f3c 100%);
+      background: #080818;
       color: #fff;
+      padding: 60px 24px 108px;
       text-align: center;
-      padding: 24px 24px 70px;
       position: relative;
       overflow: hidden;
     }
-    @media (max-width: 600px) {
-      .hero { padding: 18px 20px 60px; }
-    }
+
     .hero::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image:
-        linear-gradient(rgba(94,92,230,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(94,92,230,.07) 1px, transparent 1px);
-      background-size: 48px 48px;
-      animation: gridDrift 20s linear infinite;
-      pointer-events: none;
+        linear-gradient(rgba(99,102,241,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+      animation: gridScroll 28s linear infinite;
     }
-    @keyframes gridDrift { from { background-position: 0 0; } to { background-position: 48px 48px; } }
+
     .hero::after {
       content: '';
       position: absolute;
-      top: -60px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 300px;
-      background: radial-gradient(ellipse, rgba(94,92,230,.18) 0%, transparent 70%);
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 420px;
+      background: radial-gradient(ellipse, rgba(99,102,241,.16) 0%, rgba(244,63,94,.07) 45%, transparent 70%);
       pointer-events: none;
     }
-    .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; }
 
-    .hero-eyebrow {
+    @keyframes gridScroll { to { background-position: 56px 56px; } }
+
+    .hero-inner {
+      position: relative; z-index: 1;
+      max-width: 600px; margin: 0 auto;
+    }
+
+    .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(94,92,230,.15);
-      border: 1px solid rgba(94,92,230,.35);
-      border-radius: 20px;
+      gap: 8px;
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.28);
+      color: #a5b4fc;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: .08em;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      color: #a5a3ff;
-      padding: 5px 13px;
-      margin-bottom: 12px;
-    }
-    .hero-eyebrow .dot {
-      width: 6px; height: 6px;
-      background: #5e5ce6;
-      border-radius: 50%;
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: .4; transform: scale(.7); }
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 22px;
     }
 
-    .hero h1 {
-      font-size: clamp(24px, 5.5vw, 50px);
-      font-weight: 900;
-      letter-spacing: -.5px;
-      line-height: 1.12;
-      margin-bottom: 10px;
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: #818cf8;
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
     }
+
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+
+    .hero h1 {
+      font-size: clamp(28px, 6vw, 56px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+      color: #f9fafb;
+    }
+
     .hero h1 .grad {
-      background: linear-gradient(90deg, #a78bfa, #f472b6, #fb923c);
+      background: linear-gradient(90deg, #a78bfa 0%, #f472b6 50%, #fb923c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .hero-sub {
-      font-size: clamp(13px, 2vw, 15px);
-      color: #8892b0;
-      max-width: 400px;
-      margin: 0 auto 0;
+      font-size: 16px;
+      color: #9ca3af;
+      line-height: 1.65;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .hero-sub strong { color: #e5e7eb; font-weight: 600; }
+
+    /* ── FORM CARD ── */
+    .form-wrap {
+      max-width: 440px;
+      margin: -64px auto 0;
+      padding: 0 16px 64px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .form-card {
+      background: var(--surface);
+      border-radius: var(--r);
+      box-shadow: var(--sh-lg);
+      padding: 32px;
+      border: 1px solid rgba(0,0,0,.04);
+    }
+
+    @media (max-width: 480px) { .form-card { padding: 24px 20px; } }
+
+    .form-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+      letter-spacing: -.4px;
+    }
+
+    .form-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ── INPUTS ── */
+    .ig {
+      margin-bottom: 14px;
+    }
+
+    .ig-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+
+    .ig-wrap { position: relative; }
+
+    .ig-icon {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      pointer-events: none;
+      color: var(--text-faint);
+    }
+
+    .form-card input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 500;
+      padding: 12px 14px 12px 42px;
+      outline: none;
+      color: var(--text);
+      background: #fafafa;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+
+    .form-card input:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+      background: var(--surface);
+    }
+
+    .form-card input::placeholder { color: var(--text-faint); font-weight: 400; }
+
+    /* ── SECURITY ── */
+    .security {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #15803d;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
       line-height: 1.55;
     }
-    .hero-sub strong { color: #ccd6f6; font-weight: 600; }
 
-    /* ── Card ── */
-    .card {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0,0,0,.12);
-      max-width: 480px;
-      margin: -44px auto 48px;
-      padding: 28px 28px;
-      position: relative;
-    }
-    @media (max-width: 540px) { .card { margin: -28px 14px 24px; padding: 20px 18px; } }
-
-    .card h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-    .card .sub { font-size: 12px; color: #6e6e73; margin-bottom: 18px; line-height: 1.5; }
-
-    /* ── Fields ── */
-    .field { margin-bottom: 12px; }
-    .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 5px;
-      color: #1d1d1f;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-    .field input {
-      width: 100%;
-      border: 2px solid #e5e5ea;
-      border-radius: 12px;
-      font-size: 16px;
-      padding: 11px 14px;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      color: #1d1d1f;
-      background: #fafafa;
-    }
-    .field input:focus {
-      border-color: #5e5ce6;
-      box-shadow: 0 0 0 3px rgba(94,92,230,.12);
-      background: #fff;
-    }
-    .field input::placeholder { color: #aeaeb2; }
-    .field .hint {
-      font-size: 11px;
-      color: #8e8e93;
-      margin-top: 6px;
-      line-height: 1.5;
-      display: flex;
-      align-items: flex-start;
-      gap: 5px;
-    }
-
-    .security-note {
-      background: #f0f9f0;
-      border: 1px solid #c3e6c3;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-size: 11px;
-      color: #2d6a2d;
-      margin-bottom: 14px;
-      display: flex;
-      gap: 6px;
-      align-items: flex-start;
-      line-height: 1.5;
-    }
-
-    /* Posts selector */
-    .posts-row {
+    /* ── SELECT ── */
+    .sel-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
-    .posts-row label { font-size: 12px; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; }
-    .posts-row select {
+
+    .sel-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+
+    .sel-row select {
       flex: 1;
-      border: 2px solid #e5e5ea;
-      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
       font-size: 14px;
-      padding: 9px 12px;
+      font-family: inherit;
+      font-weight: 500;
+      padding: 10px 32px 10px 12px;
       background: #fafafa;
-      color: #1d1d1f;
+      color: var(--text);
       outline: none;
       cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
     }
-    .posts-row select:focus { border-color: #5e5ce6; }
 
-    /* ── Button ── */
-    .btn {
+    .sel-row select:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+    }
+
+    /* ── CTA BUTTON ── */
+    .btn-go {
       width: 100%;
-      background: linear-gradient(135deg, #5e5ce6, #bf5af2);
+      background: linear-gradient(135deg, #833AB4 0%, #C13584 40%, #E1306C 70%, #F77737 100%);
       border: none;
-      border-radius: 14px;
+      border-radius: var(--r-sm);
       color: #fff;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 700;
       padding: 14px;
-      transition: opacity .2s, transform .1s;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 15px rgba(193,53,132,.28);
       letter-spacing: .01em;
     }
-    .btn:hover  { opacity: .92; }
-    .btn:active { transform: scale(.98); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
 
-    /* ── Loading ── */
+    .btn-go:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(193,53,132,.38); }
+    .btn-go:active { transform: scale(.99); }
+    .btn-go:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── LOADING ── */
     #loading {
       display: none;
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
       text-align: center;
-      padding: 40px 24px;
-      max-width: 480px;
-      margin: 0 auto 40px;
     }
-    .loading-ring {
-      width: 56px; height: 56px;
-      border: 4px solid #e5e5ea;
-      border-top-color: #5e5ce6;
+
+    .spin-ring {
+      width: 48px; height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--indigo);
       border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #loading h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-    #loading p  { font-size: 14px; color: #6e6e73; }
-
-    /* ── Error ── */
-    #errorBox {
-      display: none;
-      background: #fff2f2;
-      border: 1.5px solid #ffd2d2;
-      border-radius: 12px;
-      padding: 16px 20px;
-      max-width: 480px;
+      animation: spin .7s linear infinite;
       margin: 0 auto 24px;
-      font-size: 14px;
-      color: #c0392b;
     }
 
-    /* ── Results ── */
-    #results { display: none; max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Profile strip */
-    .profile-strip {
-      background: #fff;
-      border-radius: 16px;
-      padding: 22px 24px;
+    #loading h3 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      margin-bottom: 6px;
+    }
+
+    #loading .load-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .step-list {
+      text-align: left;
+      background: var(--surface);
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .step-row {
       display: flex;
       align-items: center;
-      gap: 18px;
-      box-shadow: 0 2px 16px rgba(0,0,0,.07);
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-faint);
+      border-bottom: 1px solid var(--border-light);
+      transition: color .3s, background .3s;
     }
-    .avatar {
-      width: 64px; height: 64px;
+
+    .step-row:last-child { border-bottom: none; }
+
+    .step-row.active {
+      color: var(--indigo);
+      font-weight: 600;
+      background: #fafbff;
+    }
+
+    .step-row.done { color: var(--green); }
+
+    .step-ico {
+      width: 26px; height: 26px;
       border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #5e5ce6;
-      flex-shrink: 0;
-      background: #f5f5f7;
-    }
-    .profile-text h3 { font-size: 17px; font-weight: 700; }
-    .profile-text .handle { font-size: 13px; color: #5e5ce6; margin-bottom: 3px; }
-    .profile-text .bio { font-size: 13px; color: #6e6e73; max-width: 340px; }
-    .stats { margin-left: auto; display: flex; gap: 20px; flex-wrap: wrap; }
-    .stat { text-align: center; }
-    .stat .val { font-size: 18px; font-weight: 800; color: #1d1d1f; }
-    .stat .lbl { font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: .05em; }
-
-    /* Summary */
-    .summary-block {
-      background: linear-gradient(135deg, #f0f0ff, #f8f0ff);
-      border: 1.5px solid #d4d0ff;
-      border-radius: 16px;
-      padding: 22px 24px;
-      margin-bottom: 20px;
-    }
-    .niche-pill {
-      display: inline-block;
-      background: #5e5ce6;
-      color: #fff;
+      background: var(--border-light);
+      display: flex; align-items: center; justify-content: center;
       font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 10px;
+      flex-shrink: 0;
+      transition: background .3s;
     }
-    .summary-block p { font-size: 15px; color: #3a3a4c; line-height: 1.65; }
 
-    /* Growth potential banner */
-    .growth-banner {
-      background: linear-gradient(135deg, #0d1f3c, #1a0d3c);
-      border-radius: 16px;
-      padding: 24px 28px;
-      margin-bottom: 20px;
+    .step-row.active .step-ico { background: #e0e7ff; }
+    .step-row.done  .step-ico { background: #d1fae5; }
+
+    /* ── ERROR ── */
+    #errorBox {
+      display: none;
+      background: #fff1f2;
+      border: 1.5px solid #fecdd3;
+      border-radius: var(--r-sm);
+      padding: 14px 18px;
+      max-width: 440px;
+      margin: 0 auto 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #be123c;
+      line-height: 1.55;
+    }
+
+    /* ── RESULTS ── */
+    #results {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 36px 20px 80px;
+    }
+
+    @media (max-width: 640px) { #results { padding: 24px 14px 60px; } }
+
+    /* Profile banner */
+    .p-banner {
+      background: linear-gradient(135deg, #0f0f23 0%, #1e1b4b 60%, #0f172a 100%);
+      border-radius: var(--r);
+      padding: 28px;
       color: #fff;
       display: flex;
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
     }
-    .growth-banner .gicon { font-size: 36px; flex-shrink: 0; }
-    .growth-banner .gtitle { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #a5a3ff; margin-bottom: 4px; }
-    .growth-banner .gval { font-size: 28px; font-weight: 900; color: #fff; }
-    .growth-banner .gsub { font-size: 13px; color: #8892b0; margin-top: 2px; }
-    .growth-divider { width: 1px; height: 50px; background: rgba(255,255,255,.1); flex-shrink: 0; }
-    @media (max-width: 580px) { .growth-divider { display: none; } }
 
-    /* ── Results shared ── */
-    .section-title { font-size: 20px; font-weight: 800; margin: 32px 0 4px; }
-    .section-sub   { font-size: 13px; color: #6e6e73; margin-bottom: 16px; }
-
-    .niche-pill {
-      display: inline-block; background: #5e5ce6; color: #fff;
-      font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
+    .p-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
     }
-    .summary-block {
-      background: linear-gradient(135deg,#f0f0ff,#f8f0ff);
-      border: 1.5px solid #d4d0ff; border-radius: 16px;
-      padding: 20px 22px; margin-bottom: 20px;
-    }
-    .summary-block p { font-size: 15px; color: #3a3a4c; line-height: 1.65; }
 
-    /* ── What's working / not working ── */
+    .p-banner > * { position: relative; z-index: 1; }
+
+    .avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,.2);
+      flex-shrink: 0;
+      background: rgba(255,255,255,.1);
+    }
+
+    .p-text { flex: 1; min-width: 140px; }
+    .p-text .handle { font-size: 14px; color: #a5b4fc; font-weight: 600; margin-bottom: 3px; }
+    .p-text h3 { font-size: 20px; font-weight: 800; color: #f9fafb; letter-spacing: -.3px; }
+    .p-text .bio { font-size: 13px; color: #94a3b8; margin-top: 5px; max-width: 320px; line-height: 1.5; }
+
+    .p-stats { display: flex; gap: 24px; flex-wrap: wrap; }
+    .pstat { text-align: center; }
+    .pstat .val { font-size: 22px; font-weight: 900; color: #f9fafb; }
+    .pstat .lbl { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    /* Summary */
+    .sum-card {
+      background: var(--surface);
+      border-radius: var(--r-sm);
+      padding: 20px 24px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .niche-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+
+    .sum-card p {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+
+    /* Section header */
+    .sec-head {
+      margin-top: 40px;
+      margin-bottom: 14px;
+    }
+
+    .sec-head h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+
+    .sec-head p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Trend cards */
     .trend-card {
-      background: #fff; border-radius: 14px;
-      padding: 18px 20px; margin-bottom: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.06);
-      display: flex; gap: 14px; align-items: flex-start;
+      background: var(--surface);
+      border-radius: var(--r-sm);
+      padding: 18px 20px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: box-shadow .2s, border-color .15s;
     }
+
+    .trend-card:hover { box-shadow: var(--sh); border-color: #d1d5db; }
+
     .trend-icon {
-      width: 36px; height: 36px; border-radius: 10px;
+      width: 40px; height: 40px;
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; flex-shrink: 0;
     }
-    .trend-icon.up   { background: #e8f5e9; }
-    .trend-icon.down { background: #fff2f2; }
-    .trend-finding { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: #1d1d1f; }
-    .trend-detail  { font-size: 13px; color: #4a4a5a; line-height: 1.55; }
-    .trend-link    { font-size: 12px; color: #5e5ce6; text-decoration: none; display: inline-block; margin-top: 5px; }
-    .trend-link:hover { text-decoration: underline; }
 
-    /* ── Best posting time banner ── */
-    .time-banner {
-      background: linear-gradient(135deg,#0d1f3c,#1a0d3c);
-      border-radius: 16px; padding: 22px 24px; margin-bottom: 8px;
-      color: #fff; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-    }
-    .time-banner .ticon { font-size: 32px; flex-shrink: 0; }
-    .time-banner .tlabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #a5a3ff; margin-bottom: 4px; }
-    .time-banner .tval  { font-size: 26px; font-weight: 900; }
-    .time-banner .tsub  { font-size: 13px; color: #8892b0; margin-top: 3px; }
+    .trend-icon.up   { background: #f0fdf4; }
+    .trend-icon.down { background: #fff1f2; }
 
-    /* ── Next 3 videos ── */
-    .video-card {
-      background: #fff; border-radius: 16px;
-      padding: 24px; margin-bottom: 16px;
-      box-shadow: 0 2px 16px rgba(0,0,0,.07);
-      border-left: 4px solid #5e5ce6;
-    }
-    .video-card:nth-child(2) { border-left-color: #bf5af2; }
-    .video-card:nth-child(3) { border-left-color: #f0a500; }
+    .trend-finding { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 5px; line-height: 1.3; }
+    .trend-detail  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-    .video-num {
-      font-size: 11px; font-weight: 800; text-transform: uppercase;
-      letter-spacing: .08em; color: #5e5ce6; margin-bottom: 6px;
-    }
-    .video-card:nth-child(2) .video-num { color: #bf5af2; }
-    .video-card:nth-child(3) .video-num { color: #d48800; }
-
-    .video-title { font-size: 18px; font-weight: 800; color: #1d1d1f; margin-bottom: 12px; line-height: 1.3; }
-
-    .video-meta {
-      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
-    }
-    .vmeta {
-      display: flex; align-items: center; gap: 5px;
-      background: #f5f5f7; border-radius: 8px;
-      padding: 6px 12px; font-size: 13px; font-weight: 600; color: #1d1d1f;
-    }
-
-    .video-section-label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; color: #8e8e93; margin-bottom: 5px; margin-top: 14px;
-    }
-    .video-hook {
-      background: #f0f0ff; border-left: 3px solid #5e5ce6;
-      border-radius: 0 8px 8px 0; padding: 10px 14px;
-      font-size: 14px; font-style: italic; color: #3a3a4c; line-height: 1.5;
-    }
-    .video-what { font-size: 14px; color: #1d1d1f; line-height: 1.6; }
-    .must-include {
-      display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px;
-    }
-    .must-tag {
-      background: #e8f5e9; border: 1px solid #c3e6c3;
-      border-radius: 20px; font-size: 12px; font-weight: 600;
-      color: #2e7d32; padding: 4px 11px;
-    }
-    .hashtag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .htag {
-      background: #f0f0ff; border: 1px solid #d4d0ff;
-      border-radius: 20px; font-size: 12px; color: #5e5ce6; padding: 3px 10px;
-    }
-    .video-boost {
-      margin-top: 14px; padding: 10px 14px;
-      background: linear-gradient(135deg,#f0f0ff,#f8f0ff);
-      border-radius: 10px; font-size: 14px; font-weight: 700; color: #5e5ce6;
-    }
-
-    .tag-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-
-    .restart-btn {
-      display: block; margin: 32px auto 0;
-      background: #f5f5f7; border: 1.5px solid #e5e5ea;
-      border-radius: 12px; color: #1d1d1f; cursor: pointer;
-      font-size: 15px; font-weight: 600; padding: 13px 28px;
+    .trend-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--indigo);
+      text-decoration: none;
+      margin-top: 8px;
+      padding: 4px 10px;
+      background: var(--indigo-light);
+      border-radius: 100px;
       transition: background .15s;
     }
-    .restart-btn:hover { background: #ececec; }
+
+    .trend-link:hover { background: #c7d2fe; }
+
+    /* Time banner */
+    .time-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      border-radius: var(--r-sm);
+      padding: 24px 28px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .t-emoji { font-size: 32px; flex-shrink: 0; }
+
+    .tgroup { display: flex; flex-direction: column; }
+    .tlabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #818cf8; margin-bottom: 4px; }
+    .tval   { font-size: 24px; font-weight: 900; line-height: 1; }
+
+    .t-div { width: 1px; height: 48px; background: rgba(255,255,255,.1); flex-shrink: 0; }
+    @media (max-width: 540px) { .t-div { display: none; } }
+
+    .t-reason { font-size: 13px; color: #94a3b8; line-height: 1.55; flex: 1; min-width: 180px; }
+
+    /* Video cards */
+    .vid-card {
+      background: var(--surface);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--sh);
+      transition: box-shadow .25s, transform .25s;
+    }
+
+    .vid-card:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+
+    .vid-header {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .vh-1 { background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%); }
+    .vh-2 { background: linear-gradient(135deg, #fdf4ff 0%, #fce7f3 100%); }
+    .vh-3 { background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%); }
+
+    .vid-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 4px 11px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+
+    .vb-1 { background: #e0e7ff; color: #4338ca; }
+    .vb-2 { background: #f3e8ff; color: #7c3aed; }
+    .vb-3 { background: #fef3c7; color: #b45309; }
+
+    .vid-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+      letter-spacing: -.3px;
+    }
+
+    .vid-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .vmeta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0,0,0,.05);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .vid-body { padding: 22px 24px 24px; }
+
+    @media (max-width: 480px) {
+      .vid-header, .vid-body { padding: 16px 18px; }
+    }
+
+    .vsec {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text-faint);
+      margin-top: 18px;
+      margin-bottom: 7px;
+    }
+
+    .vsec:first-child { margin-top: 0; }
+
+    .vid-hook {
+      background: #fafafa;
+      border-left: 3px solid var(--indigo);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--text-2);
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .vid-what { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+
+    .must-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    .must-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #15803d;
+      padding: 4px 12px;
+    }
+
+    .htag-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .htag {
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 100px;
+      font-size: 12px;
+      color: #7c3aed;
+      padding: 4px 11px;
+      font-weight: 500;
+    }
+
+    .vid-boost {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #eef2ff, #fdf4ff);
+      border: 1px solid #e0e7ff;
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--indigo-dark);
+      line-height: 1.5;
+    }
+
+    /* Restart */
+    .restart-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 44px auto 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text-2);
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      padding: 12px 28px;
+      transition: all .15s;
+    }
+
+    .restart-btn:hover { border-color: #d1d5db; background: #f9fafb; box-shadow: var(--sh-sm); }
   </style>
 </head>
 <body>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow"><span class="dot"></span> AI-powered content intelligence</div>
-    <h1>Stop posting blind.<br><span class="grad">Know what works before you post.</span></h1>
-    <p class="hero-sub">We analyze your real account data — every post, every like, every view — and tell you <strong>exactly what to create next</strong> to grow faster.</p>
+<!-- ── LANDING ── -->
+<div id="landing">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge"><span class="dot"></span> AI-Powered Content Intelligence</div>
+      <h1>Stop posting blind.<br><span class="grad">Know what works before you post.</span></h1>
+      <p class="hero-sub">We analyze every post, like, and view on your account — then tell you <strong>exactly what to create next</strong> to grow faster.</p>
+    </div>
+  </div>
+
+  <div class="form-wrap">
+    <div id="errorBox"></div>
+    <div class="form-card" id="inputCard">
+      <div class="form-title">Analyze My Account</div>
+      <div class="form-sub">Enter your Instagram login to get predictions based on your real content performance.</div>
+
+      <div class="ig">
+        <label class="ig-label">Instagram Username</label>
+        <div class="ig-wrap">
+          <span class="ig-icon">@</span>
+          <input id="username" type="text" placeholder="your_username" autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="ig">
+        <label class="ig-label">Instagram Password</label>
+        <div class="ig-wrap">
+          <span class="ig-icon">🔑</span>
+          <input id="password" type="password" placeholder="Your Instagram password" autocomplete="current-password" />
+        </div>
+      </div>
+
+      <div class="security">
+        🔒 <span>Sent over encrypted HTTPS only to connect to Instagram. <strong>Never stored or logged</strong> anywhere on our servers.</span>
+      </div>
+
+      <div class="sel-row">
+        <span class="sel-label">Posts to scan:</span>
+        <select id="maxPosts">
+          <option value="10">10 posts — faster</option>
+          <option value="20" selected>20 posts — recommended</option>
+          <option value="30">30 posts — most accurate</option>
+        </select>
+      </div>
+
+      <button class="btn-go" id="analyzeBtn" onclick="analyze()">⚡ Analyze My Account</button>
+    </div>
   </div>
 </div>
 
-<!-- Input card -->
-<div class="card" id="inputCard">
-  <h2>Analyze My Account</h2>
-  <p class="sub">Connect your Instagram to get predictions based on your actual content performance.</p>
-
-  <div class="field">
-    <label>Instagram Username</label>
-    <input id="username" type="text" placeholder="e.g. sam_sulek" autocomplete="username" />
-  </div>
-
-  <div class="field">
-    <label>Instagram Password</label>
-    <input id="password" type="password" placeholder="Your Instagram password" autocomplete="current-password" />
-  </div>
-
-  <div class="security-note">
-    🔒 <span>Your password is sent over encrypted HTTPS and only used to connect to Instagram. It is <strong>never stored or logged</strong> on our servers.</span>
-  </div>
-
-  <div class="posts-row">
-    <label>Posts to scan:</label>
-    <select id="maxPosts">
-      <option value="10">10 posts — faster</option>
-      <option value="20" selected>20 posts — recommended</option>
-      <option value="30">30 posts — most accurate</option>
-    </select>
-  </div>
-
-  <button class="btn" id="analyzeBtn" onclick="analyze()">⚡ Analyze My Account</button>
-</div>
-
-<!-- Loading -->
+<!-- ── LOADING ── -->
 <div id="loading">
-  <div class="loading-ring"></div>
+  <div class="spin-ring"></div>
   <h3 id="loadingTitle">Connecting to Instagram…</h3>
-  <p id="loadingMsg">This usually takes 30–60 seconds</p>
+  <p class="load-sub" id="loadingMsg">This usually takes 30–60 seconds</p>
+  <div class="step-list">
+    <div class="step-row active" id="step0">
+      <div class="step-ico">🔍</div> Fetching your profile &amp; posts
+    </div>
+    <div class="step-row" id="step1">
+      <div class="step-ico">📊</div> Reading engagement data
+    </div>
+    <div class="step-row" id="step2">
+      <div class="step-ico">🤖</div> Analyzing patterns with AI
+    </div>
+    <div class="step-row" id="step3">
+      <div class="step-ico">🎯</div> Generating your content plan
+    </div>
+  </div>
 </div>
 
-<!-- Error -->
-<div id="errorBox"></div>
-
-<!-- Results -->
+<!-- ── RESULTS ── -->
 <div id="results">
-  <div class="profile-strip" id="profileStrip"></div>
-  <div class="summary-block" id="summaryBlock"></div>
+  <div class="p-banner" id="profileStrip"></div>
+  <div class="sum-card" id="summaryBlock"></div>
 
-  <div class="section-title">✅ What's Working</div>
-  <div class="section-sub">Posts and patterns that are getting you the most engagement — based on your real numbers</div>
+  <div class="sec-head">
+    <h2>✅ What's Working</h2>
+    <p>Posts and patterns getting you the most engagement — based on your real numbers</p>
+  </div>
   <div id="workingList"></div>
 
-  <div class="section-title">❌ What's Not Working</div>
-  <div class="section-sub">Content that's underperforming compared to your average</div>
+  <div class="sec-head">
+    <h2>⚠️ What's Not Working</h2>
+    <p>Content that's underperforming compared to your average</p>
+  </div>
   <div id="notWorkingList"></div>
 
-  <div class="section-title">🕐 Best Time to Post</div>
-  <div class="section-sub">Based on when your top posts were published</div>
+  <div class="sec-head">
+    <h2>🕐 Best Time to Post</h2>
+    <p>Based on when your top posts were published</p>
+  </div>
   <div id="timeBanner"></div>
 
-  <div class="section-title">🎬 Your Next 3 Videos</div>
-  <div class="section-sub">Exactly what to make, when to post it, and what to include</div>
+  <div class="sec-head">
+    <h2>🎬 Your Next 3 Videos</h2>
+    <p>Exactly what to make, when to post it, and what to include</p>
+  </div>
   <div id="videosList"></div>
 
   <button class="restart-btn" onclick="restart()">← Analyze another account</button>
@@ -514,25 +822,35 @@
   function hide(id)  { document.getElementById(id).style.display = "none"; }
   function block(id) { document.getElementById(id).style.display = "block"; }
 
-  const loadingSteps = [
-    ["Connecting to Instagram…",    "Securely logging in to pull your account data"],
-    ["Scanning your posts…",        "Reading captions, hashtags, likes, and view counts"],
-    ["Analyzing what worked…",      "Finding the patterns that drove your best posts"],
-    ["Running AI prediction…",      "Claude is generating your personalized content strategy"],
-    ["Almost done…",                "Calculating predicted view increases for each idea"],
+  const loadingMessages = [
+    ["Connecting to Instagram…",     "Securely logging in to pull your account data"],
+    ["Scanning your posts…",         "Reading captions, hashtags, likes, and view counts"],
+    ["Finding what worked…",         "Identifying the patterns behind your best posts"],
+    ["Running AI analysis…",         "Claude is building your personalized content strategy"],
+    ["Almost done…",                 "Calculating predicted view increases for each idea"],
   ];
-  let loadingTimer;
+
+  let loadingTimer, loadingStep = 0;
 
   function startLoadingCycle() {
-    let i = 0;
-    const title = document.getElementById("loadingTitle");
-    const msg   = document.getElementById("loadingMsg");
-    function step() {
-      [title.textContent, msg.textContent] = loadingSteps[i % loadingSteps.length];
-      i++;
-      loadingTimer = setTimeout(step, 8000);
+    loadingStep = 0;
+    const title  = document.getElementById("loadingTitle");
+    const msg    = document.getElementById("loadingMsg");
+    const steps  = [0,1,2,3].map(i => document.getElementById("step" + i));
+
+    function tick() {
+      if (loadingStep < loadingMessages.length) {
+        [title.textContent, msg.textContent] = loadingMessages[loadingStep];
+      }
+      steps.forEach((el, i) => {
+        el.classList.remove("active","done");
+        if (i < loadingStep)       el.classList.add("done");
+        else if (i === loadingStep) el.classList.add("active");
+      });
+      loadingStep++;
+      if (loadingStep < 4) loadingTimer = setTimeout(tick, 9000);
     }
-    step();
+    tick();
   }
 
   async function analyze() {
@@ -544,14 +862,14 @@
     if (!password) { alert("Please enter your Instagram password."); return; }
 
     document.getElementById("analyzeBtn").disabled = true;
-    hide("inputCard");
+    hide("landing");
     hide("results");
     hide("errorBox");
     block("loading");
     startLoadingCycle();
 
     try {
-      const res = await fetch("/api/analyze", {
+      const res  = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, max_posts: maxPosts }),
@@ -565,14 +883,14 @@
         const box = document.getElementById("errorBox");
         box.innerHTML = `<strong>Something went wrong:</strong><br>${data.error || "Unknown error. Please try again."}`;
         block("errorBox");
-        block("inputCard");
+        block("landing");
         document.getElementById("analyzeBtn").disabled = false;
         return;
       }
 
       renderResults(data);
       block("results");
-      document.getElementById("results").scrollIntoView({ behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
 
     } catch (err) {
       clearTimeout(loadingTimer);
@@ -580,7 +898,7 @@
       const box = document.getElementById("errorBox");
       box.innerHTML = `<strong>Connection error:</strong> ${err.message}`;
       block("errorBox");
-      block("inputCard");
+      block("landing");
       document.getElementById("analyzeBtn").disabled = false;
     }
   }
@@ -589,104 +907,101 @@
     hide("results");
     hide("errorBox");
     document.getElementById("password").value = "";
-    block("inputCard");
     document.getElementById("analyzeBtn").disabled = false;
+    block("landing");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function renderResults(d) {
     const p = d.profile;
 
-    /* Profile strip */
+    /* Profile banner */
     document.getElementById("profileStrip").innerHTML = `
       ${p.profile_pic_url
         ? `<img class="avatar" src="${p.profile_pic_url}" onerror="this.style.display='none'" />`
-        : `<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid #5e5ce6">👤</div>`}
-      <div class="profile-text">
+        : `<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:32px">👤</div>`}
+      <div class="p-text">
         <div class="handle">@${d.username}${p.is_verified ? " ✅" : ""}</div>
         <h3>${p.full_name || d.username}</h3>
         ${p.biography ? `<div class="bio">${p.biography.substring(0,120)}${p.biography.length > 120 ? "…" : ""}</div>` : ""}
       </div>
-      <div class="stats">
-        <div class="stat"><div class="val">${fmt(p.followers)}</div><div class="lbl">Followers</div></div>
-        <div class="stat"><div class="val">${fmt(p.post_count)}</div><div class="lbl">Posts</div></div>
-        <div class="stat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Analyzed</div></div>
+      <div class="p-stats">
+        <div class="pstat"><div class="val">${fmt(p.followers)}</div><div class="lbl">Followers</div></div>
+        <div class="pstat"><div class="val">${fmt(p.post_count)}</div><div class="lbl">Posts</div></div>
+        <div class="pstat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Analyzed</div></div>
       </div>`;
 
     /* Summary */
     document.getElementById("summaryBlock").innerHTML = `
-      <div class="niche-pill">${d.niche || "Content Creator"}</div>
+      <div class="niche-chip">${d.niche || "Content Creator"}</div>
       <p>${d.summary || ""}</p>`;
 
     /* What's working */
     document.getElementById("workingList").innerHTML = (d.whats_working || []).map(w => `
       <div class="trend-card">
         <div class="trend-icon up">✅</div>
-        <div>
+        <div style="flex:1">
           <div class="trend-finding">${w.finding}</div>
           <div class="trend-detail">${w.detail}</div>
-          ${w.post_link ? `<a class="trend-link" href="${w.post_link}" target="_blank" rel="noopener">View post →</a>` : ""}
+          ${w.post_link ? `<a class="trend-link" href="${w.post_link}" target="_blank" rel="noopener">↗ View post</a>` : ""}
         </div>
-      </div>`).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough post data to identify patterns.</p>";
+      </div>`).join("") || "<p style='color:#9ca3af;font-size:14px;padding:8px 0'>Not enough data to identify patterns.</p>";
 
     /* What's not working */
     document.getElementById("notWorkingList").innerHTML = (d.whats_not_working || []).map(w => `
       <div class="trend-card">
         <div class="trend-icon down">⚠️</div>
-        <div>
+        <div style="flex:1">
           <div class="trend-finding">${w.finding}</div>
           <div class="trend-detail">${w.detail}</div>
         </div>
-      </div>`).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough data.</p>";
+      </div>`).join("") || "<p style='color:#9ca3af;font-size:14px;padding:8px 0'>Not enough data.</p>";
 
     /* Best posting time */
     const t = d.best_posting_time || {};
     document.getElementById("timeBanner").innerHTML = t.day ? `
       <div class="time-banner">
-        <div class="ticon">📅</div>
-        <div>
-          <div class="tlabel">Best day</div>
+        <div class="t-emoji">📅</div>
+        <div class="tgroup">
+          <div class="tlabel">Best Day</div>
           <div class="tval">${t.day}</div>
         </div>
-        <div style="width:1px;height:44px;background:rgba(255,255,255,.1)"></div>
-        <div>
-          <div class="tlabel">Best time</div>
+        <div class="t-div"></div>
+        <div class="tgroup">
+          <div class="tlabel">Best Time</div>
           <div class="tval">${t.time || "—"}</div>
         </div>
-        <div style="flex:1;min-width:160px">
-          <div class="tlabel">Why</div>
-          <div class="tsub">${t.reasoning || ""}</div>
-        </div>
-      </div>` : "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough timing data — post timestamps were unavailable.</p>";
+        <div class="t-div"></div>
+        <div class="t-reason">${t.reasoning || ""}</div>
+      </div>` : "<p style='color:#9ca3af;font-size:14px;padding:8px 0'>Not enough timing data available.</p>";
 
     /* Next 3 videos */
-    const videoColors = ["#5e5ce6","#bf5af2","#f0a500"];
+    const hClass = ["vh-1","vh-2","vh-3"];
+    const bClass = ["vb-1","vb-2","vb-3"];
+    const nums   = ["01","02","03"];
+
     document.getElementById("videosList").innerHTML = (d.next_videos || []).map((v, i) => {
-      const musts = (v.must_include || []).map(m => `<span class="must-tag">✓ ${m}</span>`).join("");
+      const musts = (v.must_include || []).map(m => `<span class="must-chip">✓ ${m}</span>`).join("");
       const tags  = (v.hashtags || []).map(h => `<span class="htag">#${h}</span>`).join("");
       return `
-        <div class="video-card">
-          <div class="video-num" style="color:${videoColors[i] || '#5e5ce6'}">Video ${v.number || i+1} · ${v.format || "Reel"}</div>
-          <div class="video-title">${v.title}</div>
-          <div class="video-meta">
-            <div class="vmeta">📅 ${v.post_day || "—"}</div>
-            <div class="vmeta">🕐 ${v.post_time || "—"}</div>
+        <div class="vid-card">
+          <div class="vid-header ${hClass[i] || hClass[0]}">
+            <div class="vid-badge ${bClass[i] || bClass[0]}">Video ${nums[i] || i+1} · ${v.format || "Reel"}</div>
+            <div class="vid-title">${v.title}</div>
+            <div class="vid-meta">
+              <span class="vmeta">📅 ${v.post_day || "—"}</span>
+              <span class="vmeta">🕐 ${v.post_time || "—"}</span>
+            </div>
           </div>
-          ${v.hook ? `
-            <div class="video-section-label">Opening Hook</div>
-            <div class="video-hook">"${v.hook}"</div>` : ""}
-          ${v.what_to_film ? `
-            <div class="video-section-label">What to Film</div>
-            <div class="video-what">${v.what_to_film}</div>` : ""}
-          ${musts ? `
-            <div class="video-section-label">Must Include</div>
-            <div class="must-include">${musts}</div>` : ""}
-          ${tags ? `
-            <div class="video-section-label">Hashtags</div>
-            <div class="hashtag-wrap">${tags}</div>` : ""}
-          ${v.why ? `<div class="video-boost">📊 ${v.why}${v.estimated_boost ? " — " + v.estimated_boost : ""}</div>` : ""}
+          <div class="vid-body">
+            ${v.hook ? `<div class="vsec">Opening Hook</div><div class="vid-hook">"${v.hook}"</div>` : ""}
+            ${v.what_to_film ? `<div class="vsec">What to Film</div><div class="vid-what">${v.what_to_film}</div>` : ""}
+            ${musts ? `<div class="vsec">Must Include</div><div class="must-wrap">${musts}</div>` : ""}
+            ${tags  ? `<div class="vsec">Hashtags</div><div class="htag-wrap">${tags}</div>` : ""}
+            ${v.why ? `<div class="vid-boost">📊 ${v.why}${v.estimated_boost ? " — " + v.estimated_boost : ""}</div>` : ""}
+          </div>
         </div>`;
-    }).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Could not generate video recommendations.</p>";
+    }).join("") || "<p style='color:#9ca3af;font-size:14px;padding:8px 0'>Could not generate video recommendations.</p>";
   }
 </script>
 </body>
