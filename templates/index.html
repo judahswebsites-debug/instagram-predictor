@@ -309,128 +309,116 @@
     .growth-divider { width: 1px; height: 50px; background: rgba(255,255,255,.1); flex-shrink: 0; }
     @media (max-width: 580px) { .growth-divider { display: none; } }
 
-    /* Section header */
-    .section-title {
-      font-size: 19px;
-      font-weight: 800;
-      margin: 28px 0 4px;
-    }
-    .section-sub { font-size: 13px; color: #6e6e73; margin-bottom: 16px; }
+    /* ── Results shared ── */
+    .section-title { font-size: 20px; font-weight: 800; margin: 32px 0 4px; }
+    .section-sub   { font-size: 13px; color: #6e6e73; margin-bottom: 16px; }
 
-    /* Idea cards */
-    .idea-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 22px 24px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 14px rgba(0,0,0,.06);
-      border: 1.5px solid transparent;
-      transition: box-shadow .2s, transform .15s;
+    .niche-pill {
+      display: inline-block; background: #5e5ce6; color: #fff;
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;
     }
-    .idea-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
-    .idea-card.top    { border-color: #f0a500; background: linear-gradient(135deg, #fffbf0, #fff); }
-    .idea-card.second { border-color: #d4d0ff; }
+    .summary-block {
+      background: linear-gradient(135deg,#f0f0ff,#f8f0ff);
+      border: 1.5px solid #d4d0ff; border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 20px;
+    }
+    .summary-block p { font-size: 15px; color: #3a3a4c; line-height: 1.65; }
 
-    .idea-top {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 10px;
+    /* ── What's working / not working ── */
+    .trend-card {
+      background: #fff; border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      display: flex; gap: 14px; align-items: flex-start;
     }
-    .rank {
-      width: 34px; height: 34px;
-      border-radius: 10px;
+    .trend-icon {
+      width: 36px; height: 36px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 800;
-      flex-shrink: 0;
+      font-size: 18px; flex-shrink: 0;
     }
-    .rank.r1 { background: #fff3cd; color: #d48800; }
-    .rank.r2 { background: #ede9ff; color: #5e5ce6; }
-    .rank.r3 { background: #e0f7fa; color: #0097a7; }
-    .rank.r4 { background: #e8f5e9; color: #388e3c; }
-    .rank.r5 { background: #f5f5f7; color: #6e6e73; }
+    .trend-icon.up   { background: #e8f5e9; }
+    .trend-icon.down { background: #fff2f2; }
+    .trend-finding { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: #1d1d1f; }
+    .trend-detail  { font-size: 13px; color: #4a4a5a; line-height: 1.55; }
+    .trend-link    { font-size: 12px; color: #5e5ce6; text-decoration: none; display: inline-block; margin-top: 5px; }
+    .trend-link:hover { text-decoration: underline; }
 
-    .idea-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
-
-    .badges { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
-    .badge {
-      font-size: 12px; font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
+    /* ── Best posting time banner ── */
+    .time-banner {
+      background: linear-gradient(135deg,#0d1f3c,#1a0d3c);
+      border-radius: 16px; padding: 22px 24px; margin-bottom: 8px;
+      color: #fff; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
     }
-    .badge.fmt    { background: #e0f7fa; color: #0097a7; }
-    .badge.high   { background: #e8f5e9; color: #2e7d32; }
-    .badge.medium { background: #fff8e1; color: #f57f17; }
-    .badge.low    { background: #f5f5f7; color: #6e6e73; }
-    .badge.boost  { background: #ede9ff; color: #5e5ce6; font-weight: 800; font-size: 13px; }
+    .time-banner .ticon { font-size: 32px; flex-shrink: 0; }
+    .time-banner .tlabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #a5a3ff; margin-bottom: 4px; }
+    .time-banner .tval  { font-size: 26px; font-weight: 900; }
+    .time-banner .tsub  { font-size: 13px; color: #8892b0; margin-top: 3px; }
 
-    .idea-why { font-size: 14px; color: #4a4a5a; line-height: 1.6; margin-bottom: 12px; }
+    /* ── Next 3 videos ── */
+    .video-card {
+      background: #fff; border-radius: 16px;
+      padding: 24px; margin-bottom: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      border-left: 4px solid #5e5ce6;
+    }
+    .video-card:nth-child(2) { border-left-color: #bf5af2; }
+    .video-card:nth-child(3) { border-left-color: #f0a500; }
 
-    .keywords { display: flex; flex-wrap: wrap; gap: 6px; }
-    .kw {
-      background: #f5f5f7;
-      border: 1px solid #e5e5ea;
-      border-radius: 8px;
-      font-size: 12px;
-      color: #6e6e73;
-      padding: 4px 10px;
-      font-family: "SF Mono", monospace;
+    .video-num {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: #5e5ce6; margin-bottom: 6px;
+    }
+    .video-card:nth-child(2) .video-num { color: #bf5af2; }
+    .video-card:nth-child(3) .video-num { color: #d48800; }
+
+    .video-title { font-size: 18px; font-weight: 800; color: #1d1d1f; margin-bottom: 12px; line-height: 1.3; }
+
+    .video-meta {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .vmeta {
+      display: flex; align-items: center; gap: 5px;
+      background: #f5f5f7; border-radius: 8px;
+      padding: 6px 12px; font-size: 13px; font-weight: 600; color: #1d1d1f;
     }
 
-    /* Two-col grid */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
-    @media (max-width: 580px) { .grid2 { grid-template-columns: 1fr; } }
-
-    .mini-panel {
-      background: #fff;
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    .video-section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: #8e8e93; margin-bottom: 5px; margin-top: 14px;
     }
-    .mini-panel h4 { font-size: 13px; font-weight: 700; color: #6e6e73; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; }
-
-    .theme-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
-    .theme-row .name { font-size: 13px; font-weight: 600; min-width: 80px; text-transform: capitalize; }
-    .bar-wrap { flex: 1; background: #f5f5f7; border-radius: 4px; height: 7px; overflow: hidden; }
-    .bar { height: 7px; border-radius: 4px; background: linear-gradient(90deg, #5e5ce6, #bf5af2); }
-    .theme-row .eng { font-size: 11px; color: #8e8e93; min-width: 44px; text-align: right; }
+    .video-hook {
+      background: #f0f0ff; border-left: 3px solid #5e5ce6;
+      border-radius: 0 8px 8px 0; padding: 10px 14px;
+      font-size: 14px; font-style: italic; color: #3a3a4c; line-height: 1.5;
+    }
+    .video-what { font-size: 14px; color: #1d1d1f; line-height: 1.6; }
+    .must-include {
+      display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px;
+    }
+    .must-tag {
+      background: #e8f5e9; border: 1px solid #c3e6c3;
+      border-radius: 20px; font-size: 12px; font-weight: 600;
+      color: #2e7d32; padding: 4px 11px;
+    }
+    .hashtag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .htag {
+      background: #f0f0ff; border: 1px solid #d4d0ff;
+      border-radius: 20px; font-size: 12px; color: #5e5ce6; padding: 3px 10px;
+    }
+    .video-boost {
+      margin-top: 14px; padding: 10px 14px;
+      background: linear-gradient(135deg,#f0f0ff,#f8f0ff);
+      border-radius: 10px; font-size: 14px; font-weight: 700; color: #5e5ce6;
+    }
 
     .tag-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-    .tag {
-      background: #f0f0ff;
-      border: 1px solid #d4d0ff;
-      border-radius: 20px;
-      font-size: 12px;
-      color: #5e5ce6;
-      padding: 4px 11px;
-    }
-
-    /* Insights */
-    .insight-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-    .insight {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px 18px;
-      box-shadow: 0 1px 8px rgba(0,0,0,.05);
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .insight .icon { font-size: 22px; flex-shrink: 0; }
-    .insight .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #8e8e93; margin-bottom: 3px; }
-    .insight .val { font-size: 14px; color: #1d1d1f; line-height: 1.5; }
 
     .restart-btn {
-      display: block;
-      margin: 32px auto 0;
-      background: #f5f5f7;
-      border: 1.5px solid #e5e5ea;
-      border-radius: 12px;
-      color: #1d1d1f;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 13px 28px;
+      display: block; margin: 32px auto 0;
+      background: #f5f5f7; border: 1.5px solid #e5e5ea;
+      border-radius: 12px; color: #1d1d1f; cursor: pointer;
+      font-size: 15px; font-weight: 600; padding: 13px 28px;
       transition: background .15s;
     }
     .restart-btn:hover { background: #ececec; }
@@ -490,21 +478,24 @@
 
 <!-- Results -->
 <div id="results">
-
   <div class="profile-strip" id="profileStrip"></div>
-  <div id="growthBanner"></div>
   <div class="summary-block" id="summaryBlock"></div>
 
-  <div class="section-title">🎯 What to post next</div>
-  <div class="section-sub">Ranked by predicted view boost — use these exact titles, keywords, and formats</div>
-  <div id="ideasList"></div>
+  <div class="section-title">✅ What's Working</div>
+  <div class="section-sub">Posts and patterns that are getting you the most engagement — based on your real numbers</div>
+  <div id="workingList"></div>
 
-  <div class="section-title">📊 What's working now</div>
-  <div class="section-sub">Your best-performing themes and hashtags based on real engagement data</div>
-  <div class="grid2" id="analyticsGrid"></div>
+  <div class="section-title">❌ What's Not Working</div>
+  <div class="section-sub">Content that's underperforming compared to your average</div>
+  <div id="notWorkingList"></div>
 
-  <div class="section-title">💡 Posting strategy</div>
-  <div class="insight-list" id="insightsList"></div>
+  <div class="section-title">🕐 Best Time to Post</div>
+  <div class="section-sub">Based on when your top posts were published</div>
+  <div id="timeBanner"></div>
+
+  <div class="section-title">🎬 Your Next 3 Videos</div>
+  <div class="section-sub">Exactly what to make, when to post it, and what to include</div>
+  <div id="videosList"></div>
 
   <button class="restart-btn" onclick="restart()">← Analyze another account</button>
 </div>
@@ -603,17 +594,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function extractBoostNumbers(ideas) {
-    // Pull the highest and average boost from all ideas
-    const numbers = [];
-    (ideas || []).forEach(idea => {
-      const match = (idea.estimated_boost || "").match(/(\d+)/g);
-      if (match) numbers.push(...match.map(Number));
-    });
-    if (!numbers.length) return null;
-    return Math.max(...numbers);
-  }
-
   function renderResults(d) {
     const p = d.profile;
 
@@ -631,106 +611,82 @@
         <div class="stat"><div class="val">${fmt(p.followers)}</div><div class="lbl">Followers</div></div>
         <div class="stat"><div class="val">${fmt(p.post_count)}</div><div class="lbl">Posts</div></div>
         <div class="stat"><div class="val">${p.posts_analyzed}</div><div class="lbl">Analyzed</div></div>
-      </div>
-    `;
-
-    /* Growth potential banner */
-    const maxBoost = extractBoostNumbers(d.content_ideas);
-    const insightsCount = (d.top_themes || []).length;
-    document.getElementById("growthBanner").innerHTML = `
-      <div class="growth-banner">
-        <div class="gicon">📈</div>
-        <div>
-          <div class="gtitle">Potential View Increase</div>
-          <div class="gval">${maxBoost ? "Up to +" + maxBoost + "%" : "See below"}</div>
-          <div class="gsub">if you follow the top recommendation</div>
-        </div>
-        <div class="growth-divider"></div>
-        <div>
-          <div class="gtitle">Posts Analyzed</div>
-          <div class="gval">${p.posts_analyzed}</div>
-          <div class="gsub">real data points from your account</div>
-        </div>
-        <div class="growth-divider"></div>
-        <div>
-          <div class="gtitle">Content Themes Found</div>
-          <div class="gval">${insightsCount}</div>
-          <div class="gsub">patterns identified in your content</div>
-        </div>
-      </div>
-    `;
+      </div>`;
 
     /* Summary */
     document.getElementById("summaryBlock").innerHTML = `
-      <div class="niche-pill">${d.niche}</div>
-      <p>${d.summary}</p>
-    `;
+      <div class="niche-pill">${d.niche || "Content Creator"}</div>
+      <p>${d.summary || ""}</p>`;
 
-    /* Content ideas */
-    const rankClasses = ["r1","r2","r3","r4","r5"];
-    const cardClasses = ["top","second","","",""];
-    document.getElementById("ideasList").innerHTML = (d.content_ideas || []).map((idea, i) => {
-      const conf = (idea.confidence || "").toLowerCase();
-      const kws  = (idea.keywords || []).map(k => `<span class="kw">#${k}</span>`).join("");
-      const boostColor = i === 0 ? "#d48800" : i === 1 ? "#5e5ce6" : "#388e3c";
-      const boostText = idea.estimated_boost && idea.estimated_boost !== "not enough data"
-        ? idea.estimated_boost : "";
-      return `
-        <div class="idea-card ${cardClasses[i] || ""}">
-          <div class="idea-top">
-            <div class="rank ${rankClasses[i] || "r5"}">#${i+1}</div>
-            <div style="flex:1">
-              <div class="idea-title">${idea.title}</div>
-              ${boostText ? `<div style="font-size:13px;font-weight:700;color:${boostColor};margin-top:3px">${boostText}</div>` : ""}
-            </div>
-            <span class="badge fmt" style="align-self:flex-start">${idea.format}</span>
-          </div>
-          ${idea.why ? `<p style="font-size:14px;color:#555;margin-bottom:8px">📊 ${idea.why}</p>` : ""}
-          ${idea.action ? `<p style="font-size:14px;color:#1d1d1f;font-weight:600;margin-bottom:10px;background:#f5f5f7;padding:10px 12px;border-radius:8px">👉 ${idea.action}</p>` : ""}
-          ${kws ? `<div class="keywords">${kws}</div>` : ""}
+    /* What's working */
+    document.getElementById("workingList").innerHTML = (d.whats_working || []).map(w => `
+      <div class="trend-card">
+        <div class="trend-icon up">✅</div>
+        <div>
+          <div class="trend-finding">${w.finding}</div>
+          <div class="trend-detail">${w.detail}</div>
+          ${w.post_link ? `<a class="trend-link" href="${w.post_link}" target="_blank" rel="noopener">View post →</a>` : ""}
         </div>
-      `;
-    }).join("");
+      </div>`).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough post data to identify patterns.</p>";
 
-    /* Themes + hashtags */
-    const maxEng = Math.max(...(d.top_themes || []).map(t => t.avg_engagement), 1);
-    const themes = (d.top_themes || []).slice(0,7).map(t => `
-      <div class="theme-row">
-        <span class="name">${t.theme}</span>
-        <div class="bar-wrap"><div class="bar" style="width:${Math.round(t.avg_engagement/maxEng*100)}%"></div></div>
-        <span class="eng">${fmt(t.avg_engagement)}</span>
-      </div>
-    `).join("") || "<p style='color:#8e8e93;font-size:13px'>Not enough data.</p>";
+    /* What's not working */
+    document.getElementById("notWorkingList").innerHTML = (d.whats_not_working || []).map(w => `
+      <div class="trend-card">
+        <div class="trend-icon down">⚠️</div>
+        <div>
+          <div class="trend-finding">${w.finding}</div>
+          <div class="trend-detail">${w.detail}</div>
+        </div>
+      </div>`).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough data.</p>";
 
-    const tags = (d.top_hashtags || []).slice(0,16).map(t =>
-      `<span class="tag">#${t.tag}</span>`
-    ).join("") || "<p style='color:#8e8e93;font-size:13px'>No hashtags found.</p>";
+    /* Best posting time */
+    const t = d.best_posting_time || {};
+    document.getElementById("timeBanner").innerHTML = t.day ? `
+      <div class="time-banner">
+        <div class="ticon">📅</div>
+        <div>
+          <div class="tlabel">Best day</div>
+          <div class="tval">${t.day}</div>
+        </div>
+        <div style="width:1px;height:44px;background:rgba(255,255,255,.1)"></div>
+        <div>
+          <div class="tlabel">Best time</div>
+          <div class="tval">${t.time || "—"}</div>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <div class="tlabel">Why</div>
+          <div class="tsub">${t.reasoning || ""}</div>
+        </div>
+      </div>` : "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Not enough timing data — post timestamps were unavailable.</p>";
 
-    document.getElementById("analyticsGrid").innerHTML = `
-      <div class="mini-panel">
-        <h4>Top themes by engagement</h4>
-        ${themes}
-      </div>
-      <div class="mini-panel">
-        <h4>Best performing hashtags</h4>
-        <div class="tag-wrap">${tags}</div>
-      </div>
-    `;
-
-    /* Insights */
-    const ins = d.posting_insights || {};
-    const insHtml = [
-      ins.best_format        ? { icon:"🎬", lbl:"Best Format",    val:`${ins.best_format} — ${ins.best_format_reason || ""}` } : null,
-      ins.posting_frequency_tip ? { icon:"📅", lbl:"Post Cadence", val: ins.posting_frequency_tip } : null,
-      ins.audience_insight   ? { icon:"👥", lbl:"Your Audience",  val: ins.audience_insight } : null,
-    ].filter(Boolean).map(i => `
-      <div class="insight">
-        <div class="icon">${i.icon}</div>
-        <div><div class="lbl">${i.lbl}</div><div class="val">${i.val}</div></div>
-      </div>
-    `).join("") || "";
-
-    document.getElementById("insightsList").innerHTML = insHtml;
+    /* Next 3 videos */
+    const videoColors = ["#5e5ce6","#bf5af2","#f0a500"];
+    document.getElementById("videosList").innerHTML = (d.next_videos || []).map((v, i) => {
+      const musts = (v.must_include || []).map(m => `<span class="must-tag">✓ ${m}</span>`).join("");
+      const tags  = (v.hashtags || []).map(h => `<span class="htag">#${h}</span>`).join("");
+      return `
+        <div class="video-card">
+          <div class="video-num" style="color:${videoColors[i] || '#5e5ce6'}">Video ${v.number || i+1} · ${v.format || "Reel"}</div>
+          <div class="video-title">${v.title}</div>
+          <div class="video-meta">
+            <div class="vmeta">📅 ${v.post_day || "—"}</div>
+            <div class="vmeta">🕐 ${v.post_time || "—"}</div>
+          </div>
+          ${v.hook ? `
+            <div class="video-section-label">Opening Hook</div>
+            <div class="video-hook">"${v.hook}"</div>` : ""}
+          ${v.what_to_film ? `
+            <div class="video-section-label">What to Film</div>
+            <div class="video-what">${v.what_to_film}</div>` : ""}
+          ${musts ? `
+            <div class="video-section-label">Must Include</div>
+            <div class="must-include">${musts}</div>` : ""}
+          ${tags ? `
+            <div class="video-section-label">Hashtags</div>
+            <div class="hashtag-wrap">${tags}</div>` : ""}
+          ${v.why ? `<div class="video-boost">📊 ${v.why}${v.estimated_boost ? " — " + v.estimated_boost : ""}</div>` : ""}
+        </div>`;
+    }).join("") || "<p style='color:#8e8e93;font-size:14px;padding:8px 0'>Could not generate video recommendations.</p>";
   }
 </script>
 </body>

@@ -6,7 +6,6 @@ Then open http://localhost:5000
 
 import os
 import logging
-from dataclasses import asdict
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
@@ -61,7 +60,7 @@ def analyze():
 
         # Step 2: Analyze
         result = analyze_profile(profile, api_key)
-        if result.error and not result.content_ideas:
+        if result.error and not result.next_videos:
             return jsonify({"error": result.error}), 422
 
         response = {
@@ -79,10 +78,11 @@ def analyze():
                 "posts_analyzed": len(profile.posts),
                 "warning": profile.error,
             },
-            "top_themes": result.top_themes,
+            "whats_working": result.whats_working,
+            "whats_not_working": result.whats_not_working,
+            "best_posting_time": result.best_posting_time,
+            "next_videos": result.next_videos,
             "top_hashtags": result.top_hashtags,
-            "posting_insights": result.posting_insights,
-            "content_ideas": [asdict(idea) for idea in result.content_ideas],
         }
         return jsonify(response)
 
