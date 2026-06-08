@@ -67,7 +67,16 @@ def scrape_profile(username: str, max_posts: int = 20) -> ProfileData:
             run_input={"usernames": [username], "resultsLimit": max_posts},
         )
 
-        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+        # apify-client may return a dict or a Run object depending on version
+        if isinstance(run, dict):
+            dataset_id = run["defaultDatasetId"]
+        else:
+            dataset_id = (
+                getattr(run, "default_dataset_id", None)
+                or getattr(run, "defaultDatasetId", None)
+            )
+
+        items = list(client.dataset(dataset_id).iterate_items())
 
         if not items:
             return ProfileData(
