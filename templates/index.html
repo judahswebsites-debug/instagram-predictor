@@ -19,9 +19,12 @@
       background: linear-gradient(160deg, #0d0d1a 0%, #12102b 50%, #0d1f3c 100%);
       color: #fff;
       text-align: center;
-      padding: 40px 24px 80px;
+      padding: 24px 24px 70px;
       position: relative;
       overflow: hidden;
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 18px 20px 60px; }
     }
     .hero::before {
       content: '';
@@ -59,7 +62,7 @@
       text-transform: uppercase;
       color: #a5a3ff;
       padding: 5px 13px;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
     .hero-eyebrow .dot {
       width: 6px; height: 6px;
@@ -73,11 +76,11 @@
     }
 
     .hero h1 {
-      font-size: clamp(30px, 5.5vw, 50px);
+      font-size: clamp(24px, 5.5vw, 50px);
       font-weight: 900;
       letter-spacing: -.5px;
       line-height: 1.12;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .hero h1 .grad {
       background: linear-gradient(90deg, #a78bfa, #f472b6, #fb923c);
@@ -87,29 +90,13 @@
     }
 
     .hero-sub {
-      font-size: clamp(14px, 2vw, 16px);
+      font-size: clamp(13px, 2vw, 15px);
       color: #8892b0;
-      max-width: 460px;
-      margin: 0 auto 24px;
-      line-height: 1.65;
+      max-width: 400px;
+      margin: 0 auto 0;
+      line-height: 1.55;
     }
     .hero-sub strong { color: #ccd6f6; font-weight: 600; }
-
-    .hero-stats {
-      display: inline-flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .hero-stat {
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 12px;
-      color: #ccd6f6;
-    }
-    .hero-stat span { font-weight: 800; color: #fff; }
 
     /* ── Card ── */
     .card {
@@ -118,21 +105,21 @@
       box-shadow: 0 8px 40px rgba(0,0,0,.12);
       max-width: 480px;
       margin: -44px auto 48px;
-      padding: 36px 32px;
+      padding: 28px 28px;
       position: relative;
     }
-    @media (max-width: 540px) { .card { margin: -32px 16px 32px; padding: 26px 20px; } }
+    @media (max-width: 540px) { .card { margin: -28px 14px 24px; padding: 20px 18px; } }
 
-    .card h2 { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
-    .card .sub { font-size: 13px; color: #6e6e73; margin-bottom: 26px; line-height: 1.5; }
+    .card h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .card .sub { font-size: 12px; color: #6e6e73; margin-bottom: 18px; line-height: 1.5; }
 
     /* ── Fields ── */
-    .field { margin-bottom: 16px; }
+    .field { margin-bottom: 12px; }
     .field label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       color: #1d1d1f;
       text-transform: uppercase;
       letter-spacing: .04em;
@@ -142,7 +129,7 @@
       border: 2px solid #e5e5ea;
       border-radius: 12px;
       font-size: 16px;
-      padding: 13px 16px;
+      padding: 11px 14px;
       outline: none;
       transition: border-color .2s, box-shadow .2s;
       color: #1d1d1f;
@@ -168,12 +155,12 @@
       background: #f0f9f0;
       border: 1px solid #c3e6c3;
       border-radius: 10px;
-      padding: 11px 14px;
-      font-size: 12px;
+      padding: 9px 12px;
+      font-size: 11px;
       color: #2d6a2d;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: flex-start;
       line-height: 1.5;
     }
@@ -183,15 +170,15 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
-    .posts-row label { font-size: 13px; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; }
+    .posts-row label { font-size: 12px; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; }
     .posts-row select {
       flex: 1;
       border: 2px solid #e5e5ea;
       border-radius: 10px;
       font-size: 14px;
-      padding: 10px 12px;
+      padding: 9px 12px;
       background: #fafafa;
       color: #1d1d1f;
       outline: none;
@@ -209,7 +196,7 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: 800;
-      padding: 16px;
+      padding: 14px;
       transition: opacity .2s, transform .1s;
       letter-spacing: .01em;
     }
@@ -457,11 +444,6 @@
     <div class="hero-eyebrow"><span class="dot"></span> AI-powered content intelligence</div>
     <h1>Stop posting blind.<br><span class="grad">Know what works before you post.</span></h1>
     <p class="hero-sub">We analyze your real account data — every post, every like, every view — and tell you <strong>exactly what to create next</strong> to grow faster.</p>
-    <div class="hero-stats">
-      <div class="hero-stat">⚡ Results in <span>~45 sec</span></div>
-      <div class="hero-stat">🔒 <span>Password never stored</span></div>
-      <div class="hero-stat">📈 Predicts <span>% view increase</span></div>
-    </div>
   </div>
 </div>
 
