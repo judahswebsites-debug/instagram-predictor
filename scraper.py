@@ -65,7 +65,6 @@ def scrape_profile(username: str, max_posts: int = 20) -> ProfileData:
         logger.info(f"Fetching @{username} via Apify...")
         run = client.actor("apify/instagram-profile-scraper").call(
             run_input={"usernames": [username], "resultsLimit": max_posts},
-            timeout_secs=120,
         )
 
         items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
