@@ -673,21 +673,20 @@
       const conf = (idea.confidence || "").toLowerCase();
       const kws  = (idea.keywords || []).map(k => `<span class="kw">#${k}</span>`).join("");
       const boostColor = i === 0 ? "#d48800" : i === 1 ? "#5e5ce6" : "#388e3c";
+      const boostText = idea.estimated_boost && idea.estimated_boost !== "not enough data"
+        ? idea.estimated_boost : "";
       return `
         <div class="idea-card ${cardClasses[i] || ""}">
           <div class="idea-top">
             <div class="rank ${rankClasses[i] || "r5"}">#${i+1}</div>
-            <div>
+            <div style="flex:1">
               <div class="idea-title">${idea.title}</div>
-              <div style="font-size:13px;font-weight:700;color:${boostColor};margin-top:4px">${idea.estimated_boost}</div>
+              ${boostText ? `<div style="font-size:13px;font-weight:700;color:${boostColor};margin-top:3px">${boostText}</div>` : ""}
             </div>
+            <span class="badge fmt" style="align-self:flex-start">${idea.format}</span>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-            <span class="badge fmt">${idea.format}</span>
-            <span class="badge ${conf}">${conf === "high" ? "✅ High confidence" : conf === "medium" ? "⚡ Medium" : "💭 Low"}</span>
-          </div>
-          ${idea.why ? `<p style="font-size:14px;color:#4a4a5a;margin-bottom:6px;font-weight:600">Why: ${idea.why}</p>` : ""}
-          ${idea.action ? `<p style="font-size:14px;color:#1d1d1f;margin-bottom:10px">👉 ${idea.action}</p>` : ""}
+          ${idea.why ? `<p style="font-size:14px;color:#555;margin-bottom:8px">📊 ${idea.why}</p>` : ""}
+          ${idea.action ? `<p style="font-size:14px;color:#1d1d1f;font-weight:600;margin-bottom:10px;background:#f5f5f7;padding:10px 12px;border-radius:8px">👉 ${idea.action}</p>` : ""}
           ${kws ? `<div class="keywords">${kws}</div>` : ""}
         </div>
       `;
