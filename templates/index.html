@@ -354,15 +354,6 @@
     <div class="hint">Any public profile — no @ needed</div>
   </div>
 
-  <div class="field">
-    <label>Anthropic API Key</label>
-    <input id="apiKey" type="password" placeholder="sk-ant-api03-..." autocomplete="off" />
-    <div class="hint">
-      Free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key.
-      Your key is never saved or shared.
-    </div>
-  </div>
-
   <div class="posts-row">
     <label>Posts to scan:</label>
     <select id="maxPosts">
@@ -441,11 +432,9 @@
 
   async function analyze() {
     const username = document.getElementById("username").value.trim().replace("@","");
-    const apiKey   = document.getElementById("apiKey").value.trim();
     const maxPosts = document.getElementById("maxPosts").value;
 
     if (!username) { alert("Please enter an Instagram username."); return; }
-    if (!apiKey)   { alert("Please enter your Anthropic API key."); return; }
 
     document.getElementById("analyzeBtn").disabled = true;
     hide("inputCard");
@@ -458,7 +447,7 @@
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, api_key: apiKey, max_posts: maxPosts }),
+        body: JSON.stringify({ username, max_posts: maxPosts }),
       });
       const data = await res.json();
 
